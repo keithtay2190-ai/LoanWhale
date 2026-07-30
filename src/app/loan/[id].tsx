@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { RepaymentCalculator } from '@/components/repayment-calculator';
 import { formatPercent, formatSGD } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
 import type { Tables } from '@/lib/database.types';
@@ -102,6 +103,8 @@ export default function LoanDetailScreen() {
               <Text style={styles.sectionText}>{loan.eligibility_notes}</Text>
             </View>
           )}
+
+          <RepaymentCalculator loan={loan} />
         </ScrollView>
       )}
     </SafeAreaView>
