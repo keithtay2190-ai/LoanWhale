@@ -1,0 +1,17 @@
+{
+  "name": "LoanWhale (Expo + Supabase)",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "postCreateCommand": "npm install -g expo-cli eas-cli",
+  "forwardPorts": [8081, 19000, 19001, 19002],
+  "portsAttributes": {
+    "8081": { "label": "Metro Bundler" },
+    "19000": { "label": "Expo Dev Tools" },
+    "19001": { "label": "Expo (tunnel)" },
+    "19002": { "label": "Expo Dev Tools (web)" }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
+    }
+  }
+}
