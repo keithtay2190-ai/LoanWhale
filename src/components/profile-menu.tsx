@@ -1,52 +1,38 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { Avatar } from '@/components/avatar';
+import { useSession } from '@/hooks/use-session';
 import { supabase } from '@/lib/supabase';
 
-// Plain-View placeholder avatar (head + shoulders silhouette) so we don't need
-// an image asset or an SVG library for a generic default profile icon.
-function AvatarIcon({ size = 32 }: { size?: number }) {
-  return (
-    <View
-      style={[
-        styles.avatarOuter,
-        { width: size, height: size, borderRadius: size / 2 },
-      ]}
-    >
-      <View
-        style={[
-          styles.avatarHead,
-          {
-            width: size * 0.42,
-            height: size * 0.42,
-            borderRadius: (size * 0.42) / 2,
-            marginTop: size * 0.14,
-          },
-        ]}
-      />
-      <View
-        style={[
-          styles.avatarShoulders,
-          {
-            width: size * 0.86,
-            height: size * 0.56,
-            borderRadius: size * 0.43,
-            bottom: -size * 0.08,
-          },
-        ]}
-      />
-    </View>
-  );
-}
-
 export function ProfileMenu() {
+  const { session } = useSession();
   const [open, setOpen] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!session) return;
+    let cancelled = false;
+
+    supabase
+      .from('users')
+      .select('avatar_url')
+      .eq('id', session.user.id)
+      .single()
+      .then(({ data }) => {
+        if (!cancelled) setAvatarUrl(data?.avatar_url ?? null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session]);
 
   return (
     <>
       <Pressable onPress={() => setOpen(true)}>
-        <AvatarIcon />
+        <Avatar url={avatarUrl} />
       </Pressable>
 
       <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
@@ -79,19 +65,6 @@ export function ProfileMenu() {
 }
 
 const styles = StyleSheet.create({
-  avatarOuter: {
-    backgroundColor: '#D3DCDD',
-    overflow: 'hidden',
-    alignItems: 'center',
-  },
-  avatarHead: {
-    backgroundColor: '#84ACB6',
-  },
-  avatarShoulders: {
-    position: 'absolute',
-    backgroundColor: '#84ACB6',
-    alignSelf: 'center',
-  },
   backdrop: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.15)',
