@@ -147,7 +147,7 @@ function LoanCard({ loan }: { loan: Loan }) {
   const hasQuantumRange = loan.loan_amount_min != null || loan.loan_amount_max != null;
 
   return (
-    <View style={styles.card}>
+    <Pressable style={styles.card} onPress={() => router.push(`/loan/${loan.id}`)}>
       <View style={styles.cardHeader}>
         <Text style={styles.bankName}>{loan.bank_name}</Text>
         <View style={styles.typeBadge}>
@@ -163,7 +163,7 @@ function LoanCard({ loan }: { loan: Loan }) {
           {loan.loan_amount_max != null ? formatSGD(loan.loan_amount_max) : 'no fixed cap'}
         </Text>
       )}
-    </View>
+    </Pressable>
   );
 }
 
