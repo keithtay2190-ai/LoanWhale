@@ -97,8 +97,11 @@ export default function ProfileDetailsScreen() {
     setUploadingPhoto(true);
     try {
       const asset = result.assets[0];
-      const response = await fetch(asset.uri);
-      const blob = await response.blob();
+      // React Native's fetch Blob support is unreliable with supabase-js
+      // storage uploads (it can silently drop the request's auth header,
+      // surfacing as a confusing RLS error) - arrayBuffer is what Supabase's
+      // own Expo/React Native docs use instead.
+      const arrayBuffer = await fetch(asset.uri).then((res) => res.arrayBuffer());
 
       // Fixed path per user (not a new filename each time) so old photos don't
       // pile up in storage; the cache-busting query param below is what makes
@@ -106,7 +109,7 @@ export default function ProfileDetailsScreen() {
       const path = `${session.user.id}/avatar.jpg`;
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(path, blob, { contentType: 'image/jpeg', upsert: true });
+        .upload(path, arrayBuffer, { contentType: asset.mimeType ?? 'image/jpeg', upsert: true });
 
       if (uploadError) {
         setPhotoError(uploadError.message);
