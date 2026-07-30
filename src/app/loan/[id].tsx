@@ -4,6 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { RepaymentCalculator } from '@/components/repayment-calculator';
+import { useSession } from '@/hooks/use-session';
 import { formatPercent, formatSGD } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
 import type { Tables } from '@/lib/database.types';
@@ -13,6 +14,7 @@ type ScreenStatus = 'loading' | 'loaded' | 'error';
 
 export default function LoanDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { session } = useSession();
   const [loan, setLoan] = useState<Loan | null>(null);
   const [status, setStatus] = useState<ScreenStatus>('loading');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -74,6 +76,15 @@ export default function LoanDetailScreen() {
               value={loan.processing_fee > 0 ? formatSGD(loan.processing_fee) : 'None'}
             />
           </View>
+
+          <Pressable
+            style={styles.applyButton}
+            onPress={() =>
+              session ? router.push(`/apply/${loan.id}`) : router.push('/login')
+            }
+          >
+            <Text style={styles.applyButtonText}>Apply for this loan</Text>
+          </Pressable>
 
           {(loan.loan_amount_min != null || loan.loan_amount_max != null) && (
             <View style={styles.section}>
@@ -178,6 +189,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 24,
     marginTop: 20,
+  },
+  applyButton: {
+    backgroundColor: '#111',
+    borderRadius: 10,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  applyButtonText: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '600',
   },
   stat: {},
   statValue: {
