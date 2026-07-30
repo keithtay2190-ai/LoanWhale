@@ -1,9 +1,11 @@
+import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { formatPercent, formatSGD } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
+import { useSession } from '@/hooks/use-session';
 import type { Tables } from '@/lib/database.types';
 
 type Loan = Tables<'loans'>;
@@ -12,6 +14,7 @@ type SortDirection = 'asc' | 'desc';
 type ScreenStatus = 'loading' | 'loaded' | 'error';
 
 export default function LoanComparisonScreen() {
+  const { session } = useSession();
   const [loans, setLoans] = useState<Loan[]>([]);
   const [status, setStatus] = useState<ScreenStatus>('loading');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -54,7 +57,14 @@ export default function LoanComparisonScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      <Text style={styles.title}>Compare Loans</Text>
+      <View style={styles.headerRow}>
+        <Text style={styles.title}>Compare Loans</Text>
+        <Pressable
+          onPress={() => (session ? supabase.auth.signOut() : router.push('/login'))}
+        >
+          <Text style={styles.authLink}>{session ? 'Log Out' : 'Log In'}</Text>
+        </Pressable>
+      </View>
 
       <View style={styles.controlsRow}>
         <FilterButton label="All" active={filter === 'all'} onPress={() => setFilter('all')} />
@@ -163,10 +173,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 16,
   },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 8,
+  },
   title: {
     fontSize: 24,
     fontWeight: '700',
-    marginTop: 8,
+  },
+  authLink: {
+    fontSize: 14,
+    color: '#0066cc',
+    fontWeight: '600',
   },
   controlsRow: {
     flexDirection: 'row',
