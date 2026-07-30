@@ -98,9 +98,8 @@ export default function ProfileDetailsScreen() {
     try {
       const asset = result.assets[0];
       // React Native's fetch Blob support is unreliable with supabase-js
-      // storage uploads (it can silently drop the request's auth header,
-      // surfacing as a confusing RLS error) - arrayBuffer is what Supabase's
-      // own Expo/React Native docs use instead.
+      // storage uploads - arrayBuffer is what Supabase's own Expo/React
+      // Native docs use instead.
       const arrayBuffer = await fetch(asset.uri).then((res) => res.arrayBuffer());
 
       // Fixed path per user (not a new filename each time) so old photos don't
