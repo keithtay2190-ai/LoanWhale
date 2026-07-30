@@ -1,38 +1,19 @@
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Avatar } from '@/components/avatar';
-import { useSession } from '@/hooks/use-session';
+import { useProfile } from '@/context/profile-context';
 import { supabase } from '@/lib/supabase';
 
 export function ProfileMenu() {
-  const { session } = useSession();
+  const { profile } = useProfile();
   const [open, setOpen] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!session) return;
-    let cancelled = false;
-
-    supabase
-      .from('users')
-      .select('avatar_url')
-      .eq('id', session.user.id)
-      .single()
-      .then(({ data }) => {
-        if (!cancelled) setAvatarUrl(data?.avatar_url ?? null);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [session]);
 
   return (
     <>
       <Pressable onPress={() => setOpen(true)}>
-        <Avatar url={avatarUrl} />
+        <Avatar url={profile?.avatarUrl} />
       </Pressable>
 
       <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>

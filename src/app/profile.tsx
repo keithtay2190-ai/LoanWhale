@@ -5,6 +5,7 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Avatar } from '@/components/avatar';
+import { useProfile } from '@/context/profile-context';
 import { useSession } from '@/hooks/use-session';
 import { supabase } from '@/lib/supabase';
 
@@ -17,17 +18,14 @@ const INCOME_RANGES = [
 
 const EMPLOYMENT_TYPES = ['Salaried', 'Self-Employed', 'Business Owner', 'Unemployed'];
 
-type ScreenStatus = 'loading' | 'loaded' | 'error';
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
 export default function ProfileDetailsScreen() {
   const { session, loading: sessionLoading } = useSession();
+  const { profile, loading: profileLoading, updateLocalProfile } = useProfile();
 
-  const [status, setStatus] = useState<ScreenStatus>('loading');
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [email, setEmail] = useState('');
+  const [formInitialized, setFormInitialized] = useState(false);
   const [name, setName] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [photoError, setPhotoError] = useState<string | null>(null);
   const [ageText, setAgeText] = useState('');
@@ -38,43 +36,23 @@ export default function ProfileDetailsScreen() {
   const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (sessionLoading) return;
-    if (!session) {
+    if (!sessionLoading && !session) {
       router.replace('/login');
-      return;
     }
-
-    let cancelled = false;
-
-    async function loadProfile() {
-      setStatus('loading');
-      const { data, error } = await supabase
-        .from('users')
-        .select('email, name, avatar_url, age, income_range, employment_type')
-        .eq('id', session!.user.id)
-        .single();
-      if (cancelled) return;
-
-      if (error) {
-        setErrorMessage(error.message);
-        setStatus('error');
-        return;
-      }
-
-      setEmail(data.email);
-      setName(data.name ?? '');
-      setAvatarUrl(data.avatar_url);
-      setAgeText(data.age != null ? String(data.age) : '');
-      setIncomeRange(data.income_range);
-      setEmploymentType(data.employment_type);
-      setStatus('loaded');
-    }
-
-    loadProfile();
-    return () => {
-      cancelled = true;
-    };
   }, [session, sessionLoading]);
+
+  // Seed the editable form fields once from the shared profile, rather than
+  // binding inputs directly to context (which would fight with the user's
+  // typing if the context refreshes for any reason).
+  useEffect(() => {
+    if (!formInitialized && profile) {
+      setName(profile.name ?? '');
+      setAgeText(profile.age != null ? String(profile.age) : '');
+      setIncomeRange(profile.incomeRange);
+      setEmploymentType(profile.employmentType);
+      setFormInitialized(true);
+    }
+  }, [profile, formInitialized]);
 
   async function handleChangePhoto() {
     if (!session) return;
@@ -128,7 +106,9 @@ export default function ProfileDetailsScreen() {
         return;
       }
 
-      setAvatarUrl(bustedUrl);
+      // Updates the header avatar (and anywhere else) immediately, without
+      // needing to leave and come back to this screen.
+      updateLocalProfile({ avatarUrl: bustedUrl });
     } finally {
       setUploadingPhoto(false);
     }
@@ -161,6 +141,8 @@ export default function ProfileDetailsScreen() {
       setSaveStatus('error');
       return;
     }
+
+    updateLocalProfile({ name: name || null, age, incomeRange, employmentType });
     setSaveStatus('saved');
   }
 
@@ -170,25 +152,18 @@ export default function ProfileDetailsScreen() {
         <Text style={styles.backLink}>← Back</Text>
       </Pressable>
 
-      {status === 'loading' && (
+      {profileLoading && (
         <View style={styles.centerFill}>
           <Text style={styles.mutedText}>Loading profile…</Text>
         </View>
       )}
 
-      {status === 'error' && (
-        <View style={styles.centerFill}>
-          <Text style={styles.errorText}>Couldn't load your profile.</Text>
-          <Text style={styles.mutedText}>{errorMessage}</Text>
-        </View>
-      )}
-
-      {status === 'loaded' && (
+      {!profileLoading && profile && (
         <ScrollView contentContainerStyle={styles.content}>
           <Text style={styles.title}>Profile Details</Text>
 
           <View style={styles.avatarRow}>
-            <Avatar url={avatarUrl} size={80} />
+            <Avatar url={profile.avatarUrl} size={80} />
             <Pressable onPress={handleChangePhoto} disabled={uploadingPhoto}>
               <Text style={styles.changePhotoLink}>
                 {uploadingPhoto ? 'Uploading…' : 'Change photo'}
@@ -197,7 +172,7 @@ export default function ProfileDetailsScreen() {
           </View>
           {photoError && <Text style={styles.errorText}>{photoError}</Text>}
 
-          <Text style={styles.subtitle}>{email}</Text>
+          <Text style={styles.subtitle}>{profile.email}</Text>
 
           <FormField label="Name">
             <TextInput
