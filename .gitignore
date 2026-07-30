@@ -4,12 +4,24 @@ node_modules/
 # Expo
 .expo/
 .expo-shared/
+expo-env.d.ts
 dist/
 web-build/
+.metro-health-check*
 
 # Native build output (managed workflow regenerates these via prebuild)
 ios/
 android/
+
+# Native signing/credentials (never relevant for a managed-workflow demo app)
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.pem
 
 # Environment variables (real secrets — never commit)
 .env
