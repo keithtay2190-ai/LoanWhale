@@ -92,8 +92,11 @@ export type Database = {
           eligibility_notes: string | null
           id: string
           interest_rate: number
+          loan_amount_max: number | null
+          loan_amount_min: number | null
           loan_type: string
           processing_fee: number
+          requirements: string[]
           tenure_months: number
         }
         Insert: {
@@ -102,8 +105,11 @@ export type Database = {
           eligibility_notes?: string | null
           id?: string
           interest_rate: number
+          loan_amount_max?: number | null
+          loan_amount_min?: number | null
           loan_type: string
           processing_fee?: number
+          requirements?: string[]
           tenure_months: number
         }
         Update: {
@@ -112,8 +118,11 @@ export type Database = {
           eligibility_notes?: string | null
           id?: string
           interest_rate?: number
+          loan_amount_max?: number | null
+          loan_amount_min?: number | null
           loan_type?: string
           processing_fee?: number
+          requirements?: string[]
           tenure_months?: number
         }
         Relationships: []
