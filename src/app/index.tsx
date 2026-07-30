@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ProfileMenu } from '@/components/profile-menu';
 import { formatPercent, formatSGD } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
 import { useSession } from '@/hooks/use-session';
@@ -59,11 +60,13 @@ export default function LoanComparisonScreen() {
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       <View style={styles.headerRow}>
         <Text style={styles.title}>Compare Loans</Text>
-        <Pressable
-          onPress={() => (session ? supabase.auth.signOut() : router.push('/login'))}
-        >
-          <Text style={styles.authLink}>{session ? 'Log Out' : 'Log In'}</Text>
-        </Pressable>
+        {session ? (
+          <ProfileMenu />
+        ) : (
+          <Pressable onPress={() => router.push('/login')}>
+            <Text style={styles.authLink}>Log In</Text>
+          </Pressable>
+        )}
       </View>
 
       <View style={styles.controlsRow}>
