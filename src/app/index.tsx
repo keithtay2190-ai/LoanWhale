@@ -4,18 +4,21 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ProfileMenu } from '@/components/profile-menu';
+import { useProfile } from '@/context/profile-context';
+import { useSession } from '@/hooks/use-session';
+import { hasSufficientProfileData, isEligibleForLoan } from '@/lib/eligibility';
 import { formatPercent, formatSGD } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
-import { useSession } from '@/hooks/use-session';
 import type { Tables } from '@/lib/database.types';
 
 type Loan = Tables<'loans'>;
-type LoanTypeFilter = 'all' | 'personal' | 'business';
+type LoanTypeFilter = 'all' | 'for-you' | 'personal' | 'business';
 type SortDirection = 'asc' | 'desc';
 type ScreenStatus = 'loading' | 'loaded' | 'error';
 
 export default function LoanComparisonScreen() {
   const { session } = useSession();
+  const { profile, loading: profileLoading } = useProfile();
   const [loans, setLoans] = useState<Loan[]>([]);
   const [status, setStatus] = useState<ScreenStatus>('loading');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -45,16 +48,25 @@ export default function LoanComparisonScreen() {
     };
   }, []);
 
+  const needsProfileData =
+    filter === 'for-you' && !profileLoading && !hasSufficientProfileData(profile);
+
   const visibleLoans = useMemo(() => {
-    const filtered =
-      filter === 'all' ? loans : loans.filter((loan) => loan.loan_type === filter);
+    let filtered: Loan[];
+    if (filter === 'all') {
+      filtered = loans;
+    } else if (filter === 'for-you') {
+      filtered = profile ? loans.filter((loan) => isEligibleForLoan(loan, profile)) : [];
+    } else {
+      filtered = loans.filter((loan) => loan.loan_type === filter);
+    }
 
     return [...filtered].sort((a, b) =>
       sortDirection === 'asc'
         ? a.interest_rate - b.interest_rate
         : b.interest_rate - a.interest_rate
     );
-  }, [loans, filter, sortDirection]);
+  }, [loans, filter, sortDirection, profile]);
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
@@ -71,6 +83,11 @@ export default function LoanComparisonScreen() {
 
       <View style={styles.controlsRow}>
         <FilterButton label="All" active={filter === 'all'} onPress={() => setFilter('all')} />
+        <FilterButton
+          label="For You"
+          active={filter === 'for-you'}
+          onPress={() => setFilter('for-you')}
+        />
         <FilterButton
           label="Personal"
           active={filter === 'personal'}
@@ -92,7 +109,25 @@ export default function LoanComparisonScreen() {
         </Text>
       </Pressable>
 
-      {status === 'loading' && (
+      {filter === 'for-you' && profileLoading && (
+        <View style={styles.centerFill}>
+          <Text style={styles.mutedText}>Loading your profile…</Text>
+        </View>
+      )}
+
+      {needsProfileData && (
+        <View style={styles.centerFill}>
+          <Text style={styles.promptText}>Please update details before proceeding</Text>
+          <Text style={styles.mutedText}>
+            We need your age and income range to show loans you're eligible for.
+          </Text>
+          <Pressable style={styles.promptButton} onPress={() => router.push('/profile')}>
+            <Text style={styles.promptButtonText}>Update Details</Text>
+          </Pressable>
+        </View>
+      )}
+
+      {!needsProfileData && !(filter === 'for-you' && profileLoading) && status === 'loading' && (
         <View style={styles.centerFill}>
           <Text style={styles.mutedText}>Loading loans…</Text>
         </View>
@@ -105,13 +140,13 @@ export default function LoanComparisonScreen() {
         </View>
       )}
 
-      {status === 'loaded' && visibleLoans.length === 0 && (
+      {!needsProfileData && status === 'loaded' && visibleLoans.length === 0 && (
         <View style={styles.centerFill}>
           <Text style={styles.mutedText}>No loans match this filter.</Text>
         </View>
       )}
 
-      {status === 'loaded' && visibleLoans.length > 0 && (
+      {!needsProfileData && status === 'loaded' && visibleLoans.length > 0 && (
         <FlatList
           data={visibleLoans}
           keyExtractor={(item) => item.id}
@@ -225,10 +260,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 4,
+    paddingHorizontal: 24,
   },
   mutedText: {
     fontSize: 13,
     color: '#888',
+    textAlign: 'center',
+  },
+  promptText: {
+    fontSize: 16,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  promptButton: {
+    backgroundColor: '#111',
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    marginTop: 12,
+  },
+  promptButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
   },
   errorText: {
     fontSize: 14,

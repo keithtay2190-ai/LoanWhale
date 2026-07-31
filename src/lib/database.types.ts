@@ -95,6 +95,9 @@ export type Database = {
           loan_amount_max: number | null
           loan_amount_min: number | null
           loan_type: string
+          max_age: number | null
+          min_age: number | null
+          min_income_annual: number | null
           processing_fee: number
           requirements: string[]
           tenure_months: number
@@ -108,6 +111,9 @@ export type Database = {
           loan_amount_max?: number | null
           loan_amount_min?: number | null
           loan_type: string
+          max_age?: number | null
+          min_age?: number | null
+          min_income_annual?: number | null
           processing_fee?: number
           requirements?: string[]
           tenure_months: number
@@ -121,6 +127,9 @@ export type Database = {
           loan_amount_max?: number | null
           loan_amount_min?: number | null
           loan_type?: string
+          max_age?: number | null
+          min_age?: number | null
+          min_income_annual?: number | null
           processing_fee?: number
           requirements?: string[]
           tenure_months?: number

@@ -7,14 +7,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/avatar';
 import { useProfile } from '@/context/profile-context';
 import { useSession } from '@/hooks/use-session';
+import { INCOME_RANGES } from '@/lib/income-ranges';
 import { supabase } from '@/lib/supabase';
-
-const INCOME_RANGES = [
-  'Below S$20,000',
-  'S$20,000 - S$39,999',
-  'S$40,000 - S$79,999',
-  'S$80,000 and above',
-];
 
 const EMPLOYMENT_TYPES = ['Salaried', 'Self-Employed', 'Business Owner', 'Unemployed'];
 
@@ -197,10 +191,10 @@ export default function ProfileDetailsScreen() {
             <View style={styles.optionsWrap}>
               {INCOME_RANGES.map((range) => (
                 <OptionPill
-                  key={range}
-                  label={range}
-                  active={incomeRange === range}
-                  onPress={() => setIncomeRange(range)}
+                  key={range.label}
+                  label={range.label}
+                  active={incomeRange === range.label}
+                  onPress={() => setIncomeRange(range.label)}
                 />
               ))}
             </View>
