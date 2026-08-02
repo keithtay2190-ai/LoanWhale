@@ -117,6 +117,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xxl,
   },
   input: {
+    backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radii.md,

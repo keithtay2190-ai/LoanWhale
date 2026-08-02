@@ -312,6 +312,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   input: {
+    backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radii.md,

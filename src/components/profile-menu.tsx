@@ -49,13 +49,13 @@ export function ProfileMenu() {
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.15)',
+    backgroundColor: 'rgba(0,0,0,0.55)',
   },
   menu: {
     position: 'absolute',
     top: 60,
     right: spacing.xl,
-    backgroundColor: colors.background,
+    backgroundColor: colors.surface,
     borderRadius: radii.md,
     paddingVertical: 4,
     minWidth: 140,

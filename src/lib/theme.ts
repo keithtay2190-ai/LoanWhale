@@ -1,30 +1,37 @@
-// Single source of visual truth for the app: a clean, black-plus-one-accent
-// fintech look (Revolut/Wise-inspired). Screens should pull from here rather
-// than hardcoding colors/sizes, so a future palette change is a one-file edit.
+// Single source of visual truth for the app: a dark fintech look
+// (near-black backgrounds, purple primary accent, cyan as a secondary
+// highlight) inspired by modern budgeting-app UI. Screens should pull from
+// here rather than hardcoding colors/sizes, so a future palette change is a
+// one-file edit.
 
 export const colors = {
-  background: '#FFFFFF',
-  surface: '#F7F8FA',
-  border: '#E5E7EB',
-  borderStrong: '#D1D5DB',
+  background: '#0E0E14',
+  surface: '#1C1C26',
+  surfaceAlt: '#242430',
+  border: '#2E2E3A',
+  borderStrong: '#3A3A48',
 
-  textPrimary: '#0F172A',
-  textSecondary: '#64748B',
-  textMuted: '#94A3B8',
-  onDark: '#FFFFFF',
+  textPrimary: '#FFFFFF',
+  textSecondary: '#9B9BAA',
+  textMuted: '#6E6E7C',
+  onDark: '#FFFFFF', // text on the primary/accent-filled buttons
+  onLight: '#0E0E14', // text on light-filled surfaces (e.g. white tiles)
 
-  primary: '#111827', // buttons, active states - near-black
-  accent: '#2563EB', // links, highlights
-  accentSoft: '#EFF6FF',
+  primary: '#7C6FF0', // purple - buttons, active states
+  accent: '#B4A9FF', // brighter purple - link/badge text (better contrast than primary at small sizes)
+  accentSoft: '#241F3D', // dark purple-tinted surface, e.g. badges
 
-  success: '#16A34A',
-  successSoft: '#F0FDF4',
-  successBorder: '#BBF7D0',
+  cyan: '#7DE0EA', // secondary highlight color, used sparingly (tags)
+  cyanSoft: '#132B2E',
 
-  danger: '#DC2626',
-  dangerSoft: '#FEF2F2',
+  success: '#22C55E',
+  successSoft: '#12271C',
+  successBorder: '#1F4430',
 
-  warning: '#D97706',
+  danger: '#F87171',
+  dangerSoft: '#2A1616',
+
+  warning: '#FBBF24',
 } as const;
 
 export const spacing = {
@@ -39,9 +46,9 @@ export const spacing = {
 
 export const radii = {
   sm: 8,
-  md: 10,
-  lg: 12,
-  xl: 16,
+  md: 12,
+  lg: 16,
+  xl: 20,
   pill: 999,
 } as const;
 
@@ -52,5 +59,5 @@ export const fontSize = {
   body: 15,
   h2: 18,
   h1: 24,
-  display: 28,
+  display: 30,
 } as const;

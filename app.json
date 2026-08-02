@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "loanwhale",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "dark",
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.keithtay.loanwhale"
@@ -29,7 +29,7 @@
         {
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#0E0E14"
         }
       ],
       [
