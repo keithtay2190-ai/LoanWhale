@@ -1,6 +1,7 @@
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { PrimaryButton } from '@/components/primary-button';
@@ -23,6 +24,8 @@ export default function LoanComparisonScreen() {
   const [status, setStatus] = useState<ScreenStatus>('loading');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [filter, setFilter] = useState<LoanTypeFilter>('all');
+  const [bankFilter, setBankFilter] = useState<string | null>(null);
+  const [bankMenuOpen, setBankMenuOpen] = useState(false);
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
   useEffect(() => {
@@ -51,6 +54,11 @@ export default function LoanComparisonScreen() {
   const needsProfileData =
     filter === 'for-you' && !profileLoading && !hasSufficientProfileData(profile);
 
+  const bankOptions = useMemo(
+    () => Array.from(new Set(loans.map((loan) => loan.bank_name))).sort(),
+    [loans]
+  );
+
   const visibleLoans = useMemo(() => {
     let filtered: Loan[];
     if (filter === 'all') {
@@ -61,24 +69,48 @@ export default function LoanComparisonScreen() {
       filtered = loans.filter((loan) => loan.loan_type === filter);
     }
 
+    if (bankFilter) {
+      filtered = filtered.filter((loan) => loan.bank_name === bankFilter);
+    }
+
     return [...filtered].sort((a, b) =>
       sortDirection === 'asc'
         ? a.interest_rate - b.interest_rate
         : b.interest_rate - a.interest_rate
     );
-  }, [loans, filter, sortDirection, profile]);
+  }, [loans, filter, bankFilter, sortDirection, profile]);
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       <ScreenHeader title="Compare Loans" />
 
-      <View style={styles.controlsRow}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.controlsRow}
+      >
         <FilterButton label="All" active={filter === 'all'} onPress={() => setFilter('all')} />
         <FilterButton
           label="For You"
           active={filter === 'for-you'}
           onPress={() => setFilter('for-you')}
         />
+        <Pressable
+          style={[styles.filterButton, styles.bankButton, bankFilter && styles.filterButtonActive]}
+          onPress={() => setBankMenuOpen(true)}
+        >
+          <Text
+            style={[styles.filterButtonText, bankFilter && styles.filterButtonTextActive]}
+            numberOfLines={1}
+          >
+            {bankFilter ?? 'Bank'}
+          </Text>
+          <Ionicons
+            name="chevron-down"
+            size={14}
+            color={bankFilter ? colors.onDark : colors.textPrimary}
+          />
+        </Pressable>
         <FilterButton
           label="Personal"
           active={filter === 'personal'}
@@ -89,7 +121,47 @@ export default function LoanComparisonScreen() {
           active={filter === 'business'}
           onPress={() => setFilter('business')}
         />
-      </View>
+      </ScrollView>
+
+      <Modal
+        visible={bankMenuOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setBankMenuOpen(false)}
+      >
+        <Pressable style={styles.bankBackdrop} onPress={() => setBankMenuOpen(false)}>
+          <View style={styles.bankMenu}>
+            <Text style={styles.bankMenuTitle}>Filter by bank</Text>
+            <ScrollView style={styles.bankMenuList}>
+              <Pressable
+                style={styles.bankMenuItem}
+                onPress={() => {
+                  setBankFilter(null);
+                  setBankMenuOpen(false);
+                }}
+              >
+                <Text style={styles.bankMenuItemText}>All Banks</Text>
+                {!bankFilter && <Ionicons name="checkmark" size={18} color={colors.primary} />}
+              </Pressable>
+              {bankOptions.map((bank) => (
+                <Pressable
+                  key={bank}
+                  style={styles.bankMenuItem}
+                  onPress={() => {
+                    setBankFilter(bank);
+                    setBankMenuOpen(false);
+                  }}
+                >
+                  <Text style={styles.bankMenuItemText}>{bank}</Text>
+                  {bankFilter === bank && (
+                    <Ionicons name="checkmark" size={18} color={colors.primary} />
+                  )}
+                </Pressable>
+              ))}
+            </ScrollView>
+          </View>
+        </Pressable>
+      </Modal>
 
       <Pressable
         style={styles.sortButton}
@@ -206,12 +278,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.sm,
     marginTop: spacing.md,
+    paddingRight: spacing.lg,
   },
   filterButton: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs + 2,
     borderRadius: radii.pill,
     backgroundColor: colors.surface,
+  },
+  bankButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    maxWidth: 140,
   },
   filterButtonActive: {
     backgroundColor: colors.primary,
@@ -222,6 +301,40 @@ const styles = StyleSheet.create({
   },
   filterButtonTextActive: {
     color: colors.onDark,
+  },
+  bankBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  bankMenu: {
+    backgroundColor: colors.surface,
+    borderRadius: radii.lg,
+    padding: spacing.lg,
+    width: '80%',
+    maxHeight: '60%',
+  },
+  bankMenuTitle: {
+    fontSize: fontSize.bodySmall,
+    fontWeight: '700',
+    color: colors.textSecondary,
+    marginBottom: spacing.sm,
+  },
+  bankMenuList: {
+    alignSelf: 'stretch',
+  },
+  bankMenuItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  bankMenuItemText: {
+    fontSize: fontSize.body,
+    color: colors.textPrimary,
   },
   sortButton: {
     marginTop: spacing.sm + 2,
