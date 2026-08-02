@@ -1,12 +1,15 @@
 import { Tabs } from 'expo-router';
 
+import { colors } from '@/lib/theme';
+
 export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#111',
-        tabBarInactiveTintColor: '#999',
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textMuted,
+        tabBarStyle: { borderTopColor: colors.border },
       }}
     >
       <Tabs.Screen name="index" options={{ title: 'Compare' }} />

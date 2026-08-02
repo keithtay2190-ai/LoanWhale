@@ -2,6 +2,8 @@ import * as DocumentPicker from 'expo-document-picker';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { colors, fontSize, radii, spacing } from '@/lib/theme';
+
 // Demo-only: picks a file and shows a "Received" confirmation, per CLAUDE.md's
 // constraint that this app must never store or process real financial
 // documents. The file is never uploaded or read - just its name, held in
@@ -47,53 +49,54 @@ export function DocumentUploadSlot({ label }: { label: string }) {
 const styles = StyleSheet.create({
   card: {
     borderWidth: 1,
-    borderColor: '#eee',
-    borderRadius: 12,
-    padding: 14,
+    borderColor: colors.border,
+    borderRadius: radii.lg,
+    padding: spacing.lg - 2,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: 12,
+    gap: spacing.md,
   },
   textColumn: {
     flex: 1,
   },
   label: {
-    fontSize: 15,
+    fontSize: fontSize.body,
     fontWeight: '600',
+    color: colors.textPrimary,
   },
   placeholder: {
-    fontSize: 13,
-    color: '#999',
+    fontSize: fontSize.bodySmall,
+    color: colors.textMuted,
     marginTop: 2,
   },
   fileName: {
-    fontSize: 13,
-    color: '#2a7a2a',
+    fontSize: fontSize.bodySmall,
+    color: colors.success,
     marginTop: 2,
   },
   selectButton: {
-    backgroundColor: '#111',
-    borderRadius: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    backgroundColor: colors.primary,
+    borderRadius: radii.sm,
+    paddingHorizontal: spacing.md + 2,
+    paddingVertical: spacing.sm,
   },
   selectButtonText: {
-    color: '#fff',
-    fontSize: 13,
+    color: colors.onDark,
+    fontSize: fontSize.bodySmall,
     fontWeight: '600',
   },
   receivedBadge: {
-    backgroundColor: '#f3faf3',
+    backgroundColor: colors.successSoft,
     borderWidth: 1,
-    borderColor: '#d5ead5',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    borderColor: colors.successBorder,
+    borderRadius: radii.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
   },
   receivedBadgeText: {
-    color: '#2a7a2a',
-    fontSize: 13,
+    color: colors.success,
+    fontSize: fontSize.bodySmall,
     fontWeight: '600',
   },
 });

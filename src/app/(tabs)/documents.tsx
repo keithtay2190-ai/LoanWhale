@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { DocumentUploadSlot } from '@/components/document-upload-slot';
 import { ScreenHeader } from '@/components/screen-header';
+import { colors, fontSize, spacing } from '@/lib/theme';
 
 export default function DocumentsScreen() {
   return (
@@ -24,19 +25,19 @@ export default function DocumentsScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
+    backgroundColor: colors.background,
+    paddingHorizontal: spacing.lg,
   },
   content: {
-    paddingTop: 12,
+    paddingTop: spacing.md,
     paddingBottom: 40,
   },
   subtitle: {
-    fontSize: 13,
-    color: '#888',
-    marginBottom: 20,
+    fontSize: fontSize.bodySmall,
+    color: colors.textSecondary,
+    marginBottom: spacing.xl,
   },
   list: {
-    gap: 10,
+    gap: spacing.md - 2,
   },
 });

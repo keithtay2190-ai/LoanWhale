@@ -8,6 +8,7 @@ import {
   computeMonthlyInstalment,
   solveMonthlyEffectiveRate,
 } from '@/lib/loan-math';
+import { colors, fontSize, radii, spacing } from '@/lib/theme';
 import type { Tables } from '@/lib/database.types';
 
 type Loan = Tables<'loans'>;
@@ -118,80 +119,83 @@ export function RepaymentCalculator({ loan }: { loan: Loan }) {
 
 const styles = StyleSheet.create({
   section: {
-    marginTop: 24,
+    marginTop: spacing.xxl,
   },
   sectionTitle: {
-    fontSize: 14,
+    fontSize: fontSize.bodySmall + 1,
     fontWeight: '700',
-    marginBottom: 10,
+    color: colors.textPrimary,
+    marginBottom: spacing.md - 2,
   },
   label: {
-    fontSize: 12,
-    color: '#888',
+    fontSize: fontSize.caption,
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 15,
+    borderColor: colors.border,
+    borderRadius: radii.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md - 2,
+    fontSize: fontSize.body,
+    color: colors.textPrimary,
   },
   warningText: {
-    fontSize: 12,
-    color: '#b8860b',
-    marginTop: 6,
+    fontSize: fontSize.caption,
+    color: colors.warning,
+    marginTop: spacing.sm - 2,
   },
   mutedText: {
-    fontSize: 13,
-    color: '#888',
-    marginTop: 10,
+    fontSize: fontSize.bodySmall,
+    color: colors.textSecondary,
+    marginTop: spacing.md - 2,
   },
   statsRow: {
     flexDirection: 'row',
-    gap: 24,
-    marginTop: 16,
+    gap: spacing.xxl,
+    marginTop: spacing.lg,
   },
   statValue: {
-    fontSize: 16,
+    fontSize: fontSize.body + 1,
     fontWeight: '600',
+    color: colors.textPrimary,
   },
   statLabel: {
-    fontSize: 12,
-    color: '#888',
+    fontSize: fontSize.caption,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   toggleLink: {
-    fontSize: 13,
-    color: '#0066cc',
-    marginTop: 16,
+    fontSize: fontSize.bodySmall,
+    color: colors.accent,
+    marginTop: spacing.lg,
   },
   table: {
-    marginTop: 12,
+    marginTop: spacing.md,
     borderWidth: 1,
-    borderColor: '#eee',
-    borderRadius: 8,
+    borderColor: colors.border,
+    borderRadius: radii.sm,
     overflow: 'hidden',
   },
   tableRow: {
     flexDirection: 'row',
-    paddingVertical: 6,
-    paddingHorizontal: 8,
+    paddingVertical: spacing.sm - 2,
+    paddingHorizontal: spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: '#f2f2f2',
+    borderBottomColor: colors.border,
   },
   tableHeaderRow: {
-    backgroundColor: '#fafafa',
+    backgroundColor: colors.surface,
   },
   tableCell: {
     flex: 1,
-    fontSize: 11,
-    color: '#333',
+    fontSize: fontSize.micro,
+    color: colors.textPrimary,
   },
   tableHeaderCell: {
     fontWeight: '700',
-    color: '#666',
+    color: colors.textSecondary,
   },
   monthCell: {
     flex: 0.5,

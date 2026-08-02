@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { formatPercent, formatSGD } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
+import { colors, fontSize, radii, spacing } from '@/lib/theme';
 import type { Tables } from '@/lib/database.types';
 
 type Loan = Tables<'loans'>;
@@ -124,14 +125,14 @@ export default function CompareLoanScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 20,
+    backgroundColor: colors.background,
+    paddingHorizontal: spacing.xl,
   },
   backLink: {
-    fontSize: 15,
-    color: '#0066cc',
-    marginTop: 8,
-    marginBottom: 8,
+    fontSize: fontSize.body,
+    color: colors.accent,
+    marginTop: spacing.sm,
+    marginBottom: spacing.sm,
   },
   centerFill: {
     flex: 1,
@@ -140,22 +141,23 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   mutedText: {
-    fontSize: 13,
-    color: '#888',
+    fontSize: fontSize.bodySmall,
+    color: colors.textSecondary,
   },
   errorText: {
-    fontSize: 14,
-    color: '#c0392b',
+    fontSize: fontSize.h2 - 4,
+    color: colors.danger,
     fontWeight: '600',
   },
   title: {
-    fontSize: 20,
+    fontSize: fontSize.h2 + 2,
     fontWeight: '700',
-    marginTop: 8,
-    marginBottom: 12,
+    color: colors.textPrimary,
+    marginTop: spacing.sm,
+    marginBottom: spacing.md,
   },
   pickList: {
-    gap: 8,
+    gap: spacing.sm,
     paddingBottom: 40,
   },
   pickRow: {
@@ -163,52 +165,54 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#eee',
-    borderRadius: 12,
-    padding: 14,
+    borderColor: colors.border,
+    borderRadius: radii.lg,
+    padding: spacing.lg - 2,
   },
   pickBankName: {
-    fontSize: 15,
+    fontSize: fontSize.body,
     fontWeight: '600',
+    color: colors.textPrimary,
   },
   pickLoanType: {
-    fontSize: 12,
-    color: '#888',
+    fontSize: fontSize.caption,
+    color: colors.textSecondary,
     textTransform: 'capitalize',
     marginTop: 2,
   },
   pickRate: {
-    fontSize: 15,
+    fontSize: fontSize.body,
     fontWeight: '700',
+    color: colors.textPrimary,
   },
   table: {
-    marginTop: 12,
+    marginTop: spacing.md,
     borderWidth: 1,
-    borderColor: '#eee',
-    borderRadius: 12,
+    borderColor: colors.border,
+    borderRadius: radii.lg,
     overflow: 'hidden',
   },
   tableRow: {
     flexDirection: 'row',
-    paddingVertical: 12,
-    paddingHorizontal: 12,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: '#f2f2f2',
+    borderBottomColor: colors.border,
   },
   tableCell: {
     flex: 1,
-    fontSize: 13,
-    color: '#333',
+    fontSize: fontSize.bodySmall,
+    color: colors.textPrimary,
   },
   tableLabelCell: {
     flex: 0.8,
-    fontSize: 12,
-    color: '#888',
+    fontSize: fontSize.caption,
+    color: colors.textSecondary,
     fontWeight: '600',
   },
   tableHeaderCell: {
-    fontSize: 14,
+    fontSize: fontSize.bodySmall + 1,
     fontWeight: '700',
-    color: '#111',
+    color: colors.textPrimary,
   },
 });

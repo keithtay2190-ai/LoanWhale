@@ -5,6 +5,7 @@ import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Avatar } from '@/components/avatar';
 import { useProfile } from '@/context/profile-context';
 import { supabase } from '@/lib/supabase';
+import { colors, fontSize, radii, spacing } from '@/lib/theme';
 
 export function ProfileMenu() {
   const { profile } = useProfile();
@@ -53,9 +54,9 @@ const styles = StyleSheet.create({
   menu: {
     position: 'absolute',
     top: 60,
-    right: 20,
-    backgroundColor: '#fff',
-    borderRadius: 10,
+    right: spacing.xl,
+    backgroundColor: colors.background,
+    borderRadius: radii.md,
     paddingVertical: 4,
     minWidth: 140,
     shadowColor: '#000',
@@ -65,15 +66,15 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   menuItem: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
   },
   menuItemText: {
-    fontSize: 14,
-    color: '#111',
+    fontSize: fontSize.bodySmall + 1,
+    color: colors.textPrimary,
   },
   menuDivider: {
     height: 1,
-    backgroundColor: '#eee',
+    backgroundColor: colors.border,
   },
 });

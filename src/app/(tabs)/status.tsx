@@ -1,11 +1,13 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { PrimaryButton } from '@/components/primary-button';
 import { ScreenHeader } from '@/components/screen-header';
 import { useSession } from '@/hooks/use-session';
 import { supabase } from '@/lib/supabase';
+import { colors, fontSize, radii, spacing } from '@/lib/theme';
 import type { Tables } from '@/lib/database.types';
 
 const STAGES = ['Submitted', 'Under Review', 'Approved'] as const;
@@ -57,9 +59,9 @@ export default function StatusTrackerScreen() {
       {!sessionLoading && !session && (
         <View style={styles.centerFill}>
           <Text style={styles.promptText}>Log in to see your applications</Text>
-          <Pressable style={styles.promptButton} onPress={() => router.push('/login')}>
-            <Text style={styles.promptButtonText}>Log In</Text>
-          </Pressable>
+          <View style={styles.promptButtonWrap}>
+            <PrimaryButton label="Log In" onPress={() => router.push('/login')} />
+          </View>
         </View>
       )}
 
@@ -135,68 +137,61 @@ function ApplicationCard({ application }: { application: ApplicationWithLoan }) 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
+    backgroundColor: colors.background,
+    paddingHorizontal: spacing.lg,
   },
   centerFill: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 4,
-    paddingHorizontal: 24,
+    paddingHorizontal: spacing.xxl,
   },
   mutedText: {
-    fontSize: 13,
-    color: '#888',
+    fontSize: fontSize.bodySmall,
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   errorText: {
-    fontSize: 14,
-    color: '#c0392b',
+    fontSize: fontSize.h2 - 4,
+    color: colors.danger,
     fontWeight: '600',
   },
   promptText: {
-    fontSize: 16,
+    fontSize: fontSize.h2 - 2,
     fontWeight: '700',
+    color: colors.textPrimary,
     textAlign: 'center',
   },
-  promptButton: {
-    backgroundColor: '#111',
-    borderRadius: 10,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    marginTop: 12,
-  },
-  promptButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
+  promptButtonWrap: {
+    marginTop: spacing.md,
   },
   list: {
-    paddingTop: 12,
+    paddingTop: spacing.md,
     paddingBottom: 40,
-    gap: 12,
+    gap: spacing.md,
   },
   card: {
     borderWidth: 1,
-    borderColor: '#eee',
-    borderRadius: 12,
-    padding: 14,
+    borderColor: colors.border,
+    borderRadius: radii.lg,
+    padding: spacing.lg - 2,
   },
   bankName: {
-    fontSize: 16,
+    fontSize: fontSize.body + 1,
     fontWeight: '600',
+    color: colors.textPrimary,
   },
   loanType: {
-    fontSize: 12,
-    color: '#888',
+    fontSize: fontSize.caption,
+    color: colors.textSecondary,
     textTransform: 'capitalize',
     marginTop: 2,
-    marginBottom: 14,
+    marginBottom: spacing.md + 2,
   },
   rejectedText: {
-    fontSize: 14,
-    color: '#c0392b',
+    fontSize: fontSize.h2 - 4,
+    color: colors.danger,
     fontWeight: '600',
   },
   stepperRow: {
@@ -211,19 +206,19 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#ddd',
-    marginBottom: 6,
+    backgroundColor: colors.border,
+    marginBottom: spacing.xs + 2,
   },
   stepDotActive: {
-    backgroundColor: '#111',
+    backgroundColor: colors.primary,
   },
   stepLabel: {
-    fontSize: 11,
-    color: '#999',
+    fontSize: fontSize.micro,
+    color: colors.textMuted,
     textAlign: 'center',
   },
   stepLabelActive: {
-    color: '#111',
+    color: colors.textPrimary,
     fontWeight: '600',
   },
 });

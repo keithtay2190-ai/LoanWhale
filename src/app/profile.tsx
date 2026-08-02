@@ -5,10 +5,12 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Avatar } from '@/components/avatar';
+import { PrimaryButton } from '@/components/primary-button';
 import { useProfile } from '@/context/profile-context';
 import { useSession } from '@/hooks/use-session';
 import { INCOME_RANGES } from '@/lib/income-ranges';
 import { supabase } from '@/lib/supabase';
+import { colors, fontSize, radii, spacing } from '@/lib/theme';
 
 const EMPLOYMENT_TYPES = ['Salaried', 'Self-Employed', 'Business Owner', 'Unemployed'];
 
@@ -216,15 +218,11 @@ export default function ProfileDetailsScreen() {
           {saveError && <Text style={styles.errorText}>{saveError}</Text>}
           {saveStatus === 'saved' && <Text style={styles.successText}>Saved.</Text>}
 
-          <Pressable
-            style={[styles.saveButton, saveStatus === 'saving' && styles.saveButtonDisabled]}
+          <PrimaryButton
+            label="Save"
             onPress={handleSave}
-            disabled={saveStatus === 'saving'}
-          >
-            <Text style={styles.saveButtonText}>
-              {saveStatus === 'saving' ? 'Saving…' : 'Save'}
-            </Text>
-          </Pressable>
+            loading={saveStatus === 'saving'}
+          />
         </ScrollView>
       )}
     </SafeAreaView>
@@ -259,14 +257,14 @@ function OptionPill({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 20,
+    backgroundColor: colors.background,
+    paddingHorizontal: spacing.xl,
   },
   backLink: {
-    fontSize: 15,
-    color: '#0066cc',
-    marginTop: 8,
-    marginBottom: 8,
+    fontSize: fontSize.body,
+    color: colors.accent,
+    marginTop: spacing.sm,
+    marginBottom: spacing.sm,
   },
   centerFill: {
     flex: 1,
@@ -275,95 +273,83 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   mutedText: {
-    fontSize: 13,
-    color: '#888',
+    fontSize: fontSize.bodySmall,
+    color: colors.textSecondary,
   },
   content: {
     paddingBottom: 40,
   },
   title: {
-    fontSize: 24,
+    fontSize: fontSize.h1,
     fontWeight: '700',
-    marginTop: 8,
+    color: colors.textPrimary,
+    marginTop: spacing.sm,
   },
   avatarRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
-    marginTop: 16,
+    gap: spacing.lg,
+    marginTop: spacing.lg,
   },
   changePhotoLink: {
-    fontSize: 14,
-    color: '#0066cc',
+    fontSize: fontSize.bodySmall + 1,
+    color: colors.accent,
     fontWeight: '600',
   },
   subtitle: {
-    fontSize: 13,
-    color: '#888',
-    marginTop: 12,
-    marginBottom: 20,
+    fontSize: fontSize.bodySmall,
+    color: colors.textSecondary,
+    marginTop: spacing.md,
+    marginBottom: spacing.xl,
   },
   field: {
-    marginBottom: 20,
+    marginBottom: spacing.xl,
   },
   fieldLabel: {
-    fontSize: 13,
+    fontSize: fontSize.bodySmall,
     fontWeight: '600',
-    marginBottom: 8,
+    color: colors.textPrimary,
+    marginBottom: spacing.sm,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 15,
+    borderColor: colors.border,
+    borderRadius: radii.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    fontSize: fontSize.body,
+    color: colors.textPrimary,
   },
   optionsWrap: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: spacing.sm,
   },
   optionPill: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 18,
-    backgroundColor: '#f0f0f0',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: radii.pill,
+    backgroundColor: colors.surface,
   },
   optionPillActive: {
-    backgroundColor: '#111',
+    backgroundColor: colors.primary,
   },
   optionPillText: {
-    fontSize: 13,
-    color: '#333',
+    fontSize: fontSize.bodySmall,
+    color: colors.textPrimary,
   },
   optionPillTextActive: {
-    color: '#fff',
+    color: colors.onDark,
   },
   errorText: {
-    color: '#c0392b',
-    fontSize: 13,
-    marginTop: 8,
-    marginBottom: 12,
+    color: colors.danger,
+    fontSize: fontSize.bodySmall,
+    marginTop: spacing.sm,
+    marginBottom: spacing.md,
   },
   successText: {
-    color: '#2a7a2a',
-    fontSize: 13,
-    marginBottom: 12,
-  },
-  saveButton: {
-    backgroundColor: '#111',
-    borderRadius: 10,
-    paddingVertical: 14,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  saveButtonDisabled: {
-    opacity: 0.6,
-  },
-  saveButtonText: {
-    color: '#fff',
-    fontSize: 15,
-    fontWeight: '600',
+    color: colors.success,
+    fontSize: fontSize.bodySmall,
+    marginBottom: spacing.md,
   },
 });

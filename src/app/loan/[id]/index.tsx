@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { RepaymentCalculator } from '@/components/repayment-calculator';
 import { formatPercent, formatSGD } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
+import { colors, fontSize, radii, spacing } from '@/lib/theme';
 import type { Tables } from '@/lib/database.types';
 
 type Loan = Tables<'loans'>;
@@ -128,23 +129,23 @@ function Stat({ label, value }: { label: string; value: string }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 20,
+    backgroundColor: colors.background,
+    paddingHorizontal: spacing.xl,
   },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 8,
-    marginBottom: 8,
+    marginTop: spacing.sm,
+    marginBottom: spacing.sm,
   },
   backLink: {
-    fontSize: 15,
-    color: '#0066cc',
+    fontSize: fontSize.body,
+    color: colors.accent,
   },
   compareLink: {
-    fontSize: 15,
-    color: '#0066cc',
+    fontSize: fontSize.body,
+    color: colors.accent,
     fontWeight: '600',
   },
   centerFill: {
@@ -154,12 +155,12 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   mutedText: {
-    fontSize: 13,
-    color: '#888',
+    fontSize: fontSize.bodySmall,
+    color: colors.textSecondary,
   },
   errorText: {
-    fontSize: 14,
-    color: '#c0392b',
+    fontSize: fontSize.h2 - 4,
+    color: colors.danger,
     fontWeight: '600',
   },
   content: {
@@ -167,59 +168,63 @@ const styles = StyleSheet.create({
   },
   typeBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: '#eef4ff',
-    borderRadius: 10,
-    paddingHorizontal: 8,
+    backgroundColor: colors.accentSoft,
+    borderRadius: radii.md,
+    paddingHorizontal: spacing.sm,
     paddingVertical: 2,
-    marginTop: 8,
+    marginTop: spacing.sm,
   },
   typeBadgeText: {
-    fontSize: 11,
-    color: '#2255aa',
+    fontSize: fontSize.micro,
+    color: colors.accent,
     textTransform: 'capitalize',
+    fontWeight: '600',
   },
   bankName: {
-    fontSize: 26,
+    fontSize: fontSize.display - 2,
     fontWeight: '700',
-    marginTop: 8,
+    color: colors.textPrimary,
+    marginTop: spacing.sm,
   },
   rate: {
-    fontSize: 20,
+    fontSize: fontSize.h1 - 4,
     fontWeight: '700',
-    color: '#111',
-    marginTop: 4,
+    color: colors.textPrimary,
+    marginTop: spacing.xs,
   },
   statsRow: {
     flexDirection: 'row',
-    gap: 24,
-    marginTop: 20,
+    gap: spacing.xxl,
+    marginTop: spacing.xl,
   },
   stat: {},
   statValue: {
-    fontSize: 16,
+    fontSize: fontSize.body + 1,
     fontWeight: '600',
+    color: colors.textPrimary,
   },
   statLabel: {
-    fontSize: 12,
-    color: '#888',
+    fontSize: fontSize.caption,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   section: {
-    marginTop: 24,
+    marginTop: spacing.xxl,
   },
   sectionTitle: {
-    fontSize: 14,
+    fontSize: fontSize.bodySmall + 1,
     fontWeight: '700',
-    marginBottom: 6,
+    color: colors.textPrimary,
+    marginBottom: spacing.sm - 2,
   },
   sectionText: {
-    fontSize: 14,
-    color: '#333',
+    fontSize: fontSize.bodySmall + 1,
+    color: colors.textPrimary,
     lineHeight: 20,
   },
   requirementItem: {
-    fontSize: 14,
-    color: '#333',
+    fontSize: fontSize.bodySmall + 1,
+    color: colors.textPrimary,
     lineHeight: 22,
   },
 });

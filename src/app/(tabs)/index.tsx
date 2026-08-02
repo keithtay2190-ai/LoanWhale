@@ -3,11 +3,13 @@ import { useEffect, useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { PrimaryButton } from '@/components/primary-button';
 import { ScreenHeader } from '@/components/screen-header';
 import { useProfile } from '@/context/profile-context';
 import { hasSufficientProfileData, isEligibleForLoan } from '@/lib/eligibility';
 import { formatPercent, formatSGD } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
+import { colors, fontSize, radii, spacing } from '@/lib/theme';
 import type { Tables } from '@/lib/database.types';
 
 type Loan = Tables<'loans'>;
@@ -110,9 +112,9 @@ export default function LoanComparisonScreen() {
           <Text style={styles.mutedText}>
             We need your age and income range to show loans you're eligible for.
           </Text>
-          <Pressable style={styles.promptButton} onPress={() => router.push('/profile')}>
-            <Text style={styles.promptButtonText}>Update Details</Text>
-          </Pressable>
+          <View style={styles.promptButtonWrap}>
+            <PrimaryButton label="Update Details" onPress={() => router.push('/profile')} />
+          </View>
         </View>
       )}
 
@@ -197,82 +199,74 @@ function LoanCard({ loan }: { loan: Loan }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
+    backgroundColor: colors.background,
+    paddingHorizontal: spacing.lg,
   },
   controlsRow: {
     flexDirection: 'row',
-    gap: 8,
-    marginTop: 12,
+    gap: spacing.sm,
+    marginTop: spacing.md,
   },
   filterButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    backgroundColor: '#f0f0f0',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs + 2,
+    borderRadius: radii.pill,
+    backgroundColor: colors.surface,
   },
   filterButtonActive: {
-    backgroundColor: '#111',
+    backgroundColor: colors.primary,
   },
   filterButtonText: {
-    fontSize: 13,
-    color: '#333',
+    fontSize: fontSize.bodySmall,
+    color: colors.textPrimary,
   },
   filterButtonTextActive: {
-    color: '#fff',
+    color: colors.onDark,
   },
   sortButton: {
-    marginTop: 10,
+    marginTop: spacing.sm + 2,
     alignSelf: 'flex-start',
   },
   sortButtonText: {
-    fontSize: 13,
-    color: '#0066cc',
+    fontSize: fontSize.bodySmall,
+    color: colors.accent,
   },
   centerFill: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 4,
-    paddingHorizontal: 24,
+    paddingHorizontal: spacing.xxl,
   },
   mutedText: {
-    fontSize: 13,
-    color: '#888',
+    fontSize: fontSize.bodySmall,
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   promptText: {
-    fontSize: 16,
+    fontSize: fontSize.h2 - 2,
     fontWeight: '700',
+    color: colors.textPrimary,
     textAlign: 'center',
   },
-  promptButton: {
-    backgroundColor: '#111',
-    borderRadius: 10,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    marginTop: 12,
-  },
-  promptButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
+  promptButtonWrap: {
+    marginTop: spacing.md,
   },
   errorText: {
-    fontSize: 14,
-    color: '#c0392b',
+    fontSize: fontSize.h2 - 4,
+    color: colors.danger,
     fontWeight: '600',
   },
   listContent: {
-    paddingTop: 12,
+    paddingTop: spacing.md,
     paddingBottom: 40,
-    gap: 10,
+    gap: spacing.md - 2,
   },
   card: {
     borderWidth: 1,
-    borderColor: '#eee',
-    borderRadius: 12,
-    padding: 14,
+    borderColor: colors.border,
+    borderRadius: radii.lg,
+    padding: spacing.lg - 2,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -280,39 +274,42 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   bankName: {
-    fontSize: 16,
+    fontSize: fontSize.body + 1,
     fontWeight: '600',
+    color: colors.textPrimary,
   },
   typeBadge: {
-    backgroundColor: '#eef4ff',
-    borderRadius: 10,
-    paddingHorizontal: 8,
+    backgroundColor: colors.accentSoft,
+    borderRadius: radii.md,
+    paddingHorizontal: spacing.sm,
     paddingVertical: 2,
   },
   typeBadgeText: {
-    fontSize: 11,
-    color: '#2255aa',
+    fontSize: fontSize.micro,
+    color: colors.accent,
     textTransform: 'capitalize',
+    fontWeight: '600',
   },
   rate: {
-    fontSize: 20,
+    fontSize: fontSize.h1 - 4,
     fontWeight: '700',
-    marginTop: 6,
+    color: colors.textPrimary,
+    marginTop: spacing.sm - 2,
   },
   tenure: {
-    fontSize: 13,
-    color: '#666',
+    fontSize: fontSize.bodySmall,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   quantum: {
-    fontSize: 13,
-    color: '#666',
+    fontSize: fontSize.bodySmall,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   demoLabel: {
     textAlign: 'center',
-    fontSize: 12,
-    color: '#999',
-    paddingVertical: 8,
+    fontSize: fontSize.caption,
+    color: colors.textMuted,
+    paddingVertical: spacing.sm,
   },
 });

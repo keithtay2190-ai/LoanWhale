@@ -1,9 +1,11 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { PrimaryButton } from '@/components/primary-button';
 import { supabase } from '@/lib/supabase';
+import { colors, fontSize, radii, spacing } from '@/lib/theme';
 
 type Mode = 'sign-in' | 'sign-up';
 
@@ -56,7 +58,7 @@ export default function LoginScreen() {
       <TextInput
         style={styles.input}
         placeholder="Email"
-        placeholderTextColor="#999"
+        placeholderTextColor={colors.textMuted}
         autoCapitalize="none"
         autoCorrect={false}
         keyboardType="email-address"
@@ -66,7 +68,7 @@ export default function LoginScreen() {
       <TextInput
         style={styles.input}
         placeholder="Password"
-        placeholderTextColor="#999"
+        placeholderTextColor={colors.textMuted}
         secureTextEntry
         value={password}
         onChangeText={setPassword}
@@ -75,19 +77,11 @@ export default function LoginScreen() {
       {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
       {infoMessage && <Text style={styles.infoText}>{infoMessage}</Text>}
 
-      <Pressable
-        style={[styles.submitButton, loading && styles.submitButtonDisabled]}
+      <PrimaryButton
+        label={mode === 'sign-in' ? 'Log In' : 'Sign Up'}
         onPress={handleSubmit}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.submitButtonText}>
-            {mode === 'sign-in' ? 'Log In' : 'Sign Up'}
-          </Text>
-        )}
-      </Pressable>
+        loading={loading}
+      />
 
       <Pressable
         onPress={() => {
@@ -107,58 +101,45 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 24,
+    backgroundColor: colors.background,
+    paddingHorizontal: spacing.xxl,
   },
   backLink: {
-    fontSize: 15,
-    color: '#0066cc',
-    marginTop: 8,
+    fontSize: fontSize.body,
+    color: colors.accent,
+    marginTop: spacing.sm,
   },
   title: {
-    fontSize: 26,
+    fontSize: fontSize.display,
     fontWeight: '700',
-    marginTop: 24,
-    marginBottom: 24,
+    color: colors.textPrimary,
+    marginTop: spacing.xxl,
+    marginBottom: spacing.xxl,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 15,
-    marginBottom: 12,
+    borderColor: colors.border,
+    borderRadius: radii.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    fontSize: fontSize.body,
+    color: colors.textPrimary,
+    marginBottom: spacing.md,
   },
   errorText: {
-    color: '#c0392b',
-    fontSize: 13,
-    marginBottom: 12,
+    color: colors.danger,
+    fontSize: fontSize.bodySmall,
+    marginBottom: spacing.md,
   },
   infoText: {
-    color: '#2a7a2a',
-    fontSize: 13,
-    marginBottom: 12,
-  },
-  submitButton: {
-    backgroundColor: '#111',
-    borderRadius: 10,
-    paddingVertical: 14,
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  submitButtonDisabled: {
-    opacity: 0.6,
-  },
-  submitButtonText: {
-    color: '#fff',
-    fontSize: 15,
-    fontWeight: '600',
+    color: colors.success,
+    fontSize: fontSize.bodySmall,
+    marginBottom: spacing.md,
   },
   switchModeText: {
     textAlign: 'center',
-    color: '#0066cc',
-    fontSize: 13,
-    marginTop: 16,
+    color: colors.accent,
+    fontSize: fontSize.bodySmall,
+    marginTop: spacing.lg,
   },
 });

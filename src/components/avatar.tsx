@@ -1,5 +1,7 @@
 import { Image, StyleSheet, View } from 'react-native';
 
+import { colors } from '@/lib/theme';
+
 export function Avatar({ url, size = 32 }: { url?: string | null; size?: number }) {
   if (url) {
     return (
@@ -42,16 +44,16 @@ export function Avatar({ url, size = 32 }: { url?: string | null; size?: number 
 
 const styles = StyleSheet.create({
   outer: {
-    backgroundColor: '#D3DCDD',
+    backgroundColor: colors.surface,
     overflow: 'hidden',
     alignItems: 'center',
   },
   head: {
-    backgroundColor: '#84ACB6',
+    backgroundColor: colors.textMuted,
   },
   shoulders: {
     position: 'absolute',
-    backgroundColor: '#84ACB6',
+    backgroundColor: colors.textMuted,
     alignSelf: 'center',
   },
 });
