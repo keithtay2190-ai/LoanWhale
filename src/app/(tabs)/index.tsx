@@ -87,6 +87,7 @@ export default function LoanComparisonScreen() {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
+        style={styles.controlsScroll}
         contentContainerStyle={styles.controlsRow}
       >
         <FilterButton label="All" active={filter === 'all'} onPress={() => setFilter('all')} />
@@ -274,10 +275,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     paddingHorizontal: spacing.lg,
   },
+  controlsScroll: {
+    flexGrow: 0,
+    height: 40,
+    marginTop: spacing.md,
+  },
   controlsRow: {
     flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.sm,
-    marginTop: spacing.md,
     paddingRight: spacing.lg,
   },
   filterButton: {
