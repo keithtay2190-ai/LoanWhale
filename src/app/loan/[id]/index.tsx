@@ -3,7 +3,9 @@ import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { PrimaryButton } from '@/components/primary-button';
 import { RepaymentCalculator } from '@/components/repayment-calculator';
+import { useSession } from '@/hooks/use-session';
 import { formatPercent, formatSGD } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
 import { colors, fontSize, radii, spacing } from '@/lib/theme';
@@ -11,12 +13,17 @@ import type { Tables } from '@/lib/database.types';
 
 type Loan = Tables<'loans'>;
 type ScreenStatus = 'loading' | 'loaded' | 'error';
+type ApplicationState = 'checking' | 'none' | 'submitting' | 'submitted' | 'error';
 
 export default function LoanDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { session, loading: sessionLoading } = useSession();
   const [loan, setLoan] = useState<Loan | null>(null);
   const [status, setStatus] = useState<ScreenStatus>('loading');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const [applicationState, setApplicationState] = useState<ApplicationState>('checking');
+  const [applyError, setApplyError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -40,6 +47,61 @@ export default function LoanDetailScreen() {
       cancelled = true;
     };
   }, [id]);
+
+  // Detect an existing application for this loan so the button doesn't let
+  // someone "apply" twice - shows the submitted confirmation instead.
+  useEffect(() => {
+    if (sessionLoading) return;
+    if (!session) {
+      setApplicationState('none');
+      return;
+    }
+
+    let cancelled = false;
+
+    async function checkExistingApplication() {
+      const { data, error } = await supabase
+        .from('applications')
+        .select('id')
+        .eq('user_id', session!.user.id)
+        .eq('loan_id', id)
+        .maybeSingle();
+      if (cancelled) return;
+
+      if (error) {
+        setApplicationState('none');
+        return;
+      }
+      setApplicationState(data ? 'submitted' : 'none');
+    }
+
+    checkExistingApplication();
+    return () => {
+      cancelled = true;
+    };
+  }, [session, sessionLoading, id]);
+
+  async function handleApply() {
+    if (!session) {
+      router.push('/login');
+      return;
+    }
+
+    setApplyError(null);
+    setApplicationState('submitting');
+
+    const { error } = await supabase
+      .from('applications')
+      .insert({ user_id: session.user.id, loan_id: id });
+
+    if (error) {
+      setApplyError(error.message);
+      setApplicationState('error');
+      return;
+    }
+
+    setApplicationState('submitted');
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -79,6 +141,30 @@ export default function LoanDetailScreen() {
               label="Processing fee"
               value={loan.processing_fee > 0 ? formatSGD(loan.processing_fee) : 'None'}
             />
+          </View>
+
+          <View style={styles.applySection}>
+            {applicationState === 'submitted' ? (
+              <View style={styles.appliedBox}>
+                <Text style={styles.appliedTitle}>✓ Application Submitted</Text>
+                <Text style={styles.appliedText}>
+                  Your application has been sent to our sales rep, who will contact you shortly.
+                </Text>
+                <Pressable onPress={() => router.push('/status')}>
+                  <Text style={styles.appliedLink}>View status →</Text>
+                </Pressable>
+              </View>
+            ) : (
+              <>
+                <PrimaryButton
+                  label="Apply for this loan"
+                  onPress={handleApply}
+                  loading={applicationState === 'submitting'}
+                  disabled={applicationState === 'checking'}
+                />
+                {applyError && <Text style={styles.errorText}>{applyError}</Text>}
+              </>
+            )}
           </View>
 
           {(loan.loan_amount_min != null || loan.loan_amount_max != null) && (
@@ -202,6 +288,33 @@ const styles = StyleSheet.create({
     fontSize: fontSize.body + 1,
     fontWeight: '600',
     color: colors.textPrimary,
+  },
+  applySection: {
+    marginTop: spacing.xl,
+  },
+  appliedBox: {
+    backgroundColor: colors.successSoft,
+    borderWidth: 1,
+    borderColor: colors.successBorder,
+    borderRadius: radii.lg,
+    padding: spacing.lg,
+  },
+  appliedTitle: {
+    fontSize: fontSize.bodySmall + 1,
+    fontWeight: '700',
+    color: colors.success,
+  },
+  appliedText: {
+    fontSize: fontSize.bodySmall,
+    color: colors.textPrimary,
+    marginTop: spacing.xs,
+    lineHeight: 18,
+  },
+  appliedLink: {
+    fontSize: fontSize.bodySmall,
+    color: colors.accent,
+    fontWeight: '600',
+    marginTop: spacing.sm,
   },
   statLabel: {
     fontSize: fontSize.caption,
