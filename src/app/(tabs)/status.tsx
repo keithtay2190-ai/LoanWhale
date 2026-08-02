@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ScreenHeader } from '@/components/screen-header';
 import { useSession } from '@/hooks/use-session';
 import { supabase } from '@/lib/supabase';
 import type { Tables } from '@/lib/database.types';
@@ -51,7 +52,7 @@ export default function StatusTrackerScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      <Text style={styles.title}>Application Status</Text>
+      <ScreenHeader title="Application Status" />
 
       {!sessionLoading && !session && (
         <View style={styles.centerFill}>
@@ -137,12 +138,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 16,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    marginTop: 8,
-    marginBottom: 12,
-  },
   centerFill: {
     flex: 1,
     alignItems: 'center',
@@ -178,6 +173,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   list: {
+    paddingTop: 12,
     paddingBottom: 40,
     gap: 12,
   },

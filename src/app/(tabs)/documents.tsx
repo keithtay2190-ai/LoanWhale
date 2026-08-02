@@ -2,12 +2,13 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { DocumentUploadSlot } from '@/components/document-upload-slot';
+import { ScreenHeader } from '@/components/screen-header';
 
 export default function DocumentsScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+      <ScreenHeader title="Documents" />
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Documents</Text>
         <Text style={styles.subtitle}>Demo only — files aren't uploaded or stored.</Text>
 
         <View style={styles.list}>
@@ -27,17 +28,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   content: {
+    paddingTop: 12,
     paddingBottom: 40,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    marginTop: 8,
   },
   subtitle: {
     fontSize: 13,
     color: '#888',
-    marginTop: 4,
     marginBottom: 20,
   },
   list: {

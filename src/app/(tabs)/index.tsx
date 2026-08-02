@@ -3,9 +3,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ProfileMenu } from '@/components/profile-menu';
+import { ScreenHeader } from '@/components/screen-header';
 import { useProfile } from '@/context/profile-context';
-import { useSession } from '@/hooks/use-session';
 import { hasSufficientProfileData, isEligibleForLoan } from '@/lib/eligibility';
 import { formatPercent, formatSGD } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
@@ -17,7 +16,6 @@ type SortDirection = 'asc' | 'desc';
 type ScreenStatus = 'loading' | 'loaded' | 'error';
 
 export default function LoanComparisonScreen() {
-  const { session } = useSession();
   const { profile, loading: profileLoading } = useProfile();
   const [loans, setLoans] = useState<Loan[]>([]);
   const [status, setStatus] = useState<ScreenStatus>('loading');
@@ -70,16 +68,7 @@ export default function LoanComparisonScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      <View style={styles.headerRow}>
-        <Text style={styles.title}>Compare Loans</Text>
-        {session ? (
-          <ProfileMenu />
-        ) : (
-          <Pressable onPress={() => router.push('/login')}>
-            <Text style={styles.authLink}>Log In</Text>
-          </Pressable>
-        )}
-      </View>
+      <ScreenHeader title="Compare Loans" />
 
       <View style={styles.controlsRow}>
         <FilterButton label="All" active={filter === 'all'} onPress={() => setFilter('all')} />
@@ -210,21 +199,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     paddingHorizontal: 16,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-  },
-  authLink: {
-    fontSize: 14,
-    color: '#0066cc',
-    fontWeight: '600',
   },
   controlsRow: {
     flexDirection: 'row',
