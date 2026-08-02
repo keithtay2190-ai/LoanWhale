@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { PrimaryButton } from '@/components/primary-button';
 import { ScreenHeader } from '@/components/screen-header';
 import { useSession } from '@/hooks/use-session';
+import { getFriendlyErrorMessage } from '@/lib/errors';
 import { supabase } from '@/lib/supabase';
 import { colors, fontSize, radii, spacing } from '@/lib/theme';
 import type { Tables } from '@/lib/database.types';
@@ -24,6 +25,7 @@ export default function StatusTrackerScreen() {
   const [status, setStatus] = useState<ScreenStatus>('loading');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [retryToken, setRetryToken] = useState(0);
 
   useEffect(() => {
     if (sessionLoading || !session) return;
@@ -39,7 +41,7 @@ export default function StatusTrackerScreen() {
       if (cancelled) return;
 
       if (error) {
-        setErrorMessage(error.message);
+        setErrorMessage(getFriendlyErrorMessage(error));
         setStatus('error');
         return;
       }
@@ -51,7 +53,7 @@ export default function StatusTrackerScreen() {
     return () => {
       cancelled = true;
     };
-  }, [session, sessionLoading]);
+  }, [session, sessionLoading, retryToken]);
 
   function confirmCancel(applicationId: string) {
     Alert.alert(
@@ -70,9 +72,11 @@ export default function StatusTrackerScreen() {
               .eq('id', applicationId);
             setCancellingId(null);
 
-            if (!error) {
-              setApplications((prev) => prev.filter((a) => a.id !== applicationId));
+            if (error) {
+              Alert.alert("Couldn't cancel application", getFriendlyErrorMessage(error));
+              return;
             }
+            setApplications((prev) => prev.filter((a) => a.id !== applicationId));
           },
         },
       ]
@@ -102,6 +106,9 @@ export default function StatusTrackerScreen() {
         <View style={styles.centerFill}>
           <Text style={styles.errorText}>Couldn't load applications.</Text>
           <Text style={styles.mutedText}>{errorMessage}</Text>
+          <View style={styles.promptButtonWrap}>
+            <PrimaryButton label="Try Again" onPress={() => setRetryToken((t) => t + 1)} />
+          </View>
         </View>
       )}
 

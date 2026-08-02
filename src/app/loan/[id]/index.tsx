@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { PrimaryButton } from '@/components/primary-button';
 import { RepaymentCalculator } from '@/components/repayment-calculator';
 import { useSession } from '@/hooks/use-session';
+import { getFriendlyErrorMessage } from '@/lib/errors';
 import { formatPercent, formatSGD } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
 import { colors, fontSize, radii, spacing } from '@/lib/theme';
@@ -21,6 +22,7 @@ export default function LoanDetailScreen() {
   const [loan, setLoan] = useState<Loan | null>(null);
   const [status, setStatus] = useState<ScreenStatus>('loading');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [retryToken, setRetryToken] = useState(0);
 
   const [applicationState, setApplicationState] = useState<ApplicationState>('checking');
   const [applyError, setApplyError] = useState<string | null>(null);
@@ -34,7 +36,7 @@ export default function LoanDetailScreen() {
       if (cancelled) return;
 
       if (error) {
-        setErrorMessage(error.message);
+        setErrorMessage(getFriendlyErrorMessage(error));
         setStatus('error');
         return;
       }
@@ -46,7 +48,7 @@ export default function LoanDetailScreen() {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [id, retryToken]);
 
   // Detect an existing application for this loan so the button doesn't let
   // someone "apply" twice - shows the submitted confirmation instead.
@@ -95,7 +97,7 @@ export default function LoanDetailScreen() {
       .insert({ user_id: session.user.id, loan_id: id });
 
     if (error) {
-      setApplyError(error.message);
+      setApplyError(getFriendlyErrorMessage(error));
       setApplicationState('error');
       return;
     }
@@ -124,6 +126,9 @@ export default function LoanDetailScreen() {
         <View style={styles.centerFill}>
           <Text style={styles.errorText}>Couldn't load this loan.</Text>
           <Text style={styles.mutedText}>{errorMessage}</Text>
+          <View style={styles.retryButtonWrap}>
+            <PrimaryButton label="Try Again" onPress={() => setRetryToken((t) => t + 1)} />
+          </View>
         </View>
       )}
 
@@ -239,10 +244,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 4,
+    paddingHorizontal: spacing.xl,
+  },
+  retryButtonWrap: {
+    marginTop: spacing.md,
   },
   mutedText: {
     fontSize: fontSize.bodySmall,
     color: colors.textSecondary,
+    textAlign: 'center',
   },
   errorText: {
     fontSize: fontSize.h2 - 4,

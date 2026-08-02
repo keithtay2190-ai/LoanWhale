@@ -8,6 +8,7 @@ import { PrimaryButton } from '@/components/primary-button';
 import { ScreenHeader } from '@/components/screen-header';
 import { useProfile } from '@/context/profile-context';
 import { hasSufficientProfileData, isEligibleForLoan } from '@/lib/eligibility';
+import { getFriendlyErrorMessage } from '@/lib/errors';
 import { formatPercent, formatSGD } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
 import { colors, fontSize, radii, spacing } from '@/lib/theme';
@@ -27,6 +28,7 @@ export default function LoanComparisonScreen() {
   const [bankFilter, setBankFilter] = useState<string | null>(null);
   const [bankMenuOpen, setBankMenuOpen] = useState(false);
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  const [retryToken, setRetryToken] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -37,7 +39,7 @@ export default function LoanComparisonScreen() {
       if (cancelled) return;
 
       if (error) {
-        setErrorMessage(error.message);
+        setErrorMessage(getFriendlyErrorMessage(error));
         setStatus('error');
         return;
       }
@@ -49,7 +51,7 @@ export default function LoanComparisonScreen() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [retryToken]);
 
   const needsProfileData =
     filter === 'for-you' && !profileLoading && !hasSufficientProfileData(profile);
@@ -201,6 +203,9 @@ export default function LoanComparisonScreen() {
         <View style={styles.centerFill}>
           <Text style={styles.errorText}>Couldn't load loans.</Text>
           <Text style={styles.mutedText}>{errorMessage}</Text>
+          <View style={styles.promptButtonWrap}>
+            <PrimaryButton label="Try Again" onPress={() => setRetryToken((t) => t + 1)} />
+          </View>
         </View>
       )}
 

@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 
 import { useSession } from '@/hooks/use-session';
+import { getFriendlyErrorMessage } from '@/lib/errors';
 import { supabase } from '@/lib/supabase';
 
 export type Profile = {
@@ -15,6 +16,7 @@ export type Profile = {
 type ProfileContextValue = {
   profile: Profile | null;
   loading: boolean;
+  error: string | null;
   refresh: () => Promise<void>;
   // Updates the in-memory profile immediately (e.g. right after a successful
   // save), so every screen showing profile data - the header avatar, Details,
@@ -28,31 +30,38 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   const { session } = useSession();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     if (!session) {
       setProfile(null);
+      setError(null);
       setLoading(false);
       return;
     }
 
     setLoading(true);
-    const { data, error } = await supabase
+    setError(null);
+    const { data, error: fetchError } = await supabase
       .from('users')
       .select('email, name, avatar_url, age, income_range, employment_type')
       .eq('id', session.user.id)
       .single();
 
-    if (!error && data) {
-      setProfile({
-        email: data.email,
-        name: data.name,
-        avatarUrl: data.avatar_url,
-        age: data.age,
-        incomeRange: data.income_range,
-        employmentType: data.employment_type,
-      });
+    if (fetchError) {
+      setError(getFriendlyErrorMessage(fetchError));
+      setLoading(false);
+      return;
     }
+
+    setProfile({
+      email: data.email,
+      name: data.name,
+      avatarUrl: data.avatar_url,
+      age: data.age,
+      incomeRange: data.income_range,
+      employmentType: data.employment_type,
+    });
     setLoading(false);
   }, [session]);
 
@@ -65,7 +74,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <ProfileContext.Provider value={{ profile, loading, refresh, updateLocalProfile }}>
+    <ProfileContext.Provider value={{ profile, loading, error, refresh, updateLocalProfile }}>
       {children}
     </ProfileContext.Provider>
   );

@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { PrimaryButton } from '@/components/primary-button';
+import { getFriendlyErrorMessage } from '@/lib/errors';
 import { formatPercent, formatSGD } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
 import { colors, fontSize, radii, spacing } from '@/lib/theme';
@@ -24,6 +26,7 @@ export default function CompareLoanScreen() {
   const [status, setStatus] = useState<ScreenStatus>('loading');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [otherLoanId, setOtherLoanId] = useState<string | null>(null);
+  const [retryToken, setRetryToken] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -34,7 +37,7 @@ export default function CompareLoanScreen() {
       if (cancelled) return;
 
       if (error) {
-        setErrorMessage(error.message);
+        setErrorMessage(getFriendlyErrorMessage(error));
         setStatus('error');
         return;
       }
@@ -46,7 +49,7 @@ export default function CompareLoanScreen() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [retryToken]);
 
   const currentLoan = loans.find((loan) => loan.id === id) ?? null;
   const otherLoan = loans.find((loan) => loan.id === otherLoanId) ?? null;
@@ -68,6 +71,9 @@ export default function CompareLoanScreen() {
         <View style={styles.centerFill}>
           <Text style={styles.errorText}>Couldn't load loans.</Text>
           <Text style={styles.mutedText}>{errorMessage}</Text>
+          <View style={styles.retryButtonWrap}>
+            <PrimaryButton label="Try Again" onPress={() => setRetryToken((t) => t + 1)} />
+          </View>
         </View>
       )}
 
@@ -139,10 +145,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 4,
+    paddingHorizontal: spacing.xl,
+  },
+  retryButtonWrap: {
+    marginTop: spacing.md,
   },
   mutedText: {
     fontSize: fontSize.bodySmall,
     color: colors.textSecondary,
+    textAlign: 'center',
   },
   errorText: {
     fontSize: fontSize.h2 - 4,

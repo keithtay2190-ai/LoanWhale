@@ -8,6 +8,7 @@ import { Avatar } from '@/components/avatar';
 import { PrimaryButton } from '@/components/primary-button';
 import { useProfile } from '@/context/profile-context';
 import { useSession } from '@/hooks/use-session';
+import { getFriendlyErrorMessage } from '@/lib/errors';
 import { INCOME_RANGES } from '@/lib/income-ranges';
 import { supabase } from '@/lib/supabase';
 import { colors, fontSize, radii, spacing } from '@/lib/theme';
@@ -18,7 +19,13 @@ type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
 export default function ProfileDetailsScreen() {
   const { session, loading: sessionLoading } = useSession();
-  const { profile, loading: profileLoading, updateLocalProfile } = useProfile();
+  const {
+    profile,
+    loading: profileLoading,
+    error: profileError,
+    refresh: refreshProfile,
+    updateLocalProfile,
+  } = useProfile();
 
   const [formInitialized, setFormInitialized] = useState(false);
   const [name, setName] = useState('');
@@ -85,7 +92,7 @@ export default function ProfileDetailsScreen() {
         .upload(path, arrayBuffer, { contentType: asset.mimeType ?? 'image/jpeg', upsert: true });
 
       if (uploadError) {
-        setPhotoError(uploadError.message);
+        setPhotoError(getFriendlyErrorMessage(uploadError));
         return;
       }
 
@@ -98,7 +105,7 @@ export default function ProfileDetailsScreen() {
         .eq('id', session.user.id);
 
       if (updateError) {
-        setPhotoError(updateError.message);
+        setPhotoError(getFriendlyErrorMessage(updateError));
         return;
       }
 
@@ -133,7 +140,7 @@ export default function ProfileDetailsScreen() {
       .eq('id', session.user.id);
 
     if (error) {
-      setSaveError(error.message);
+      setSaveError(getFriendlyErrorMessage(error));
       setSaveStatus('error');
       return;
     }
@@ -151,6 +158,16 @@ export default function ProfileDetailsScreen() {
       {profileLoading && (
         <View style={styles.centerFill}>
           <Text style={styles.mutedText}>Loading profile…</Text>
+        </View>
+      )}
+
+      {!profileLoading && profileError && !profile && (
+        <View style={styles.centerFill}>
+          <Text style={styles.errorText}>Couldn't load your profile.</Text>
+          <Text style={styles.mutedText}>{profileError}</Text>
+          <View style={styles.retryButtonWrap}>
+            <PrimaryButton label="Try Again" onPress={refreshProfile} />
+          </View>
         </View>
       )}
 
@@ -271,6 +288,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 4,
+    paddingHorizontal: spacing.xl,
+  },
+  retryButtonWrap: {
+    marginTop: spacing.md,
   },
   mutedText: {
     fontSize: fontSize.bodySmall,
@@ -347,6 +368,7 @@ const styles = StyleSheet.create({
     fontSize: fontSize.bodySmall,
     marginTop: spacing.sm,
     marginBottom: spacing.md,
+    textAlign: 'center',
   },
   successText: {
     color: colors.success,

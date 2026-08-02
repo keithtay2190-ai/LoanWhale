@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { PrimaryButton } from '@/components/primary-button';
+import { getFriendlyErrorMessage } from '@/lib/errors';
 import { supabase } from '@/lib/supabase';
 import { colors, fontSize, radii, spacing } from '@/lib/theme';
 
@@ -26,7 +27,7 @@ export default function LoginScreen() {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       setLoading(false);
       if (error) {
-        setErrorMessage(error.message);
+        setErrorMessage(getFriendlyErrorMessage(error));
         return;
       }
       router.replace('/');
@@ -36,7 +37,7 @@ export default function LoginScreen() {
     const { data, error } = await supabase.auth.signUp({ email, password });
     setLoading(false);
     if (error) {
-      setErrorMessage(error.message);
+      setErrorMessage(getFriendlyErrorMessage(error));
       return;
     }
     // If email confirmation is required, Supabase returns a user but no session yet.
