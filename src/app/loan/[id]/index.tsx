@@ -42,9 +42,14 @@ export default function LoanDetailScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <Pressable onPress={() => router.back()}>
-        <Text style={styles.backLink}>← Back</Text>
-      </Pressable>
+      <View style={styles.headerRow}>
+        <Pressable onPress={() => router.back()}>
+          <Text style={styles.backLink}>← Back</Text>
+        </Pressable>
+        <Pressable onPress={() => router.push(`/loan/${id}/compare`)}>
+          <Text style={styles.compareLink}>Compare</Text>
+        </Pressable>
+      </View>
 
       {status === 'loading' && (
         <View style={styles.centerFill}>
@@ -126,11 +131,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 20,
   },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 8,
+    marginBottom: 8,
+  },
   backLink: {
     fontSize: 15,
     color: '#0066cc',
-    marginTop: 8,
-    marginBottom: 8,
+  },
+  compareLink: {
+    fontSize: 15,
+    color: '#0066cc',
+    fontWeight: '600',
   },
   centerFill: {
     flex: 1,
