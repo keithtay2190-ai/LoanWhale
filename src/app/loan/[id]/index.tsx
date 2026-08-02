@@ -148,7 +148,7 @@ export default function LoanDetailScreen() {
               <View style={styles.appliedBox}>
                 <Text style={styles.appliedTitle}>✓ Application Submitted</Text>
                 <Text style={styles.appliedText}>
-                  Your application has been sent to our sales rep, who will contact you shortly.
+                  Your application has been submitted, we will contact you shortly.
                 </Text>
                 <Pressable onPress={() => router.push('/status')}>
                   <Text style={styles.appliedLink}>View status →</Text>

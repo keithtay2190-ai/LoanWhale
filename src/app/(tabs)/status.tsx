@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { PrimaryButton } from '@/components/primary-button';
@@ -23,6 +23,7 @@ export default function StatusTrackerScreen() {
   const [applications, setApplications] = useState<ApplicationWithLoan[]>([]);
   const [status, setStatus] = useState<ScreenStatus>('loading');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (sessionLoading || !session) return;
@@ -51,6 +52,32 @@ export default function StatusTrackerScreen() {
       cancelled = true;
     };
   }, [session, sessionLoading]);
+
+  function confirmCancel(applicationId: string) {
+    Alert.alert(
+      'Cancel application?',
+      'This removes your application. You can apply again later if you change your mind.',
+      [
+        { text: 'Keep it', style: 'cancel' },
+        {
+          text: 'Cancel Application',
+          style: 'destructive',
+          onPress: async () => {
+            setCancellingId(applicationId);
+            const { error } = await supabase
+              .from('applications')
+              .delete()
+              .eq('id', applicationId);
+            setCancellingId(null);
+
+            if (!error) {
+              setApplications((prev) => prev.filter((a) => a.id !== applicationId));
+            }
+          },
+        },
+      ]
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
@@ -87,7 +114,12 @@ export default function StatusTrackerScreen() {
       {session && status === 'loaded' && applications.length > 0 && (
         <ScrollView contentContainerStyle={styles.list}>
           {applications.map((application) => (
-            <ApplicationCard key={application.id} application={application} />
+            <ApplicationCard
+              key={application.id}
+              application={application}
+              onCancel={confirmCancel}
+              cancelling={cancellingId === application.id}
+            />
           ))}
         </ScrollView>
       )}
@@ -95,14 +127,22 @@ export default function StatusTrackerScreen() {
   );
 }
 
-function ApplicationCard({ application }: { application: ApplicationWithLoan }) {
+function ApplicationCard({
+  application,
+  onCancel,
+  cancelling,
+}: {
+  application: ApplicationWithLoan;
+  onCancel: (applicationId: string) => void;
+  cancelling: boolean;
+}) {
   const isRejected = application.status === 'Rejected';
   const currentStageIndex = STAGES.indexOf(
     application.status as (typeof STAGES)[number]
   );
 
   return (
-    <View style={styles.card}>
+    <Pressable style={styles.card} onPress={() => router.push(`/loan/${application.loan_id}`)}>
       <Text style={styles.bankName}>{application.loans?.bank_name ?? 'Loan'}</Text>
       <Text style={styles.loanType}>{application.loans?.loan_type}</Text>
 
@@ -130,7 +170,17 @@ function ApplicationCard({ application }: { application: ApplicationWithLoan }) 
           ))}
         </View>
       )}
-    </View>
+
+      <Pressable
+        style={styles.cancelButton}
+        onPress={() => onCancel(application.id)}
+        disabled={cancelling}
+      >
+        <Text style={styles.cancelButtonText}>
+          {cancelling ? 'Cancelling…' : 'Cancel Application'}
+        </Text>
+      </Pressable>
+    </Pressable>
   );
 }
 
@@ -219,6 +269,18 @@ const styles = StyleSheet.create({
   },
   stepLabelActive: {
     color: colors.textPrimary,
+    fontWeight: '600',
+  },
+  cancelButton: {
+    marginTop: spacing.md,
+    paddingTop: spacing.md - 2,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    fontSize: fontSize.bodySmall,
+    color: colors.danger,
     fontWeight: '600',
   },
 });
