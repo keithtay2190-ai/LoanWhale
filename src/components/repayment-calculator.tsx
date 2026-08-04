@@ -83,7 +83,14 @@ export function RepaymentCalculator({ loan }: { loan: Loan }) {
             </View>
           </View>
 
-          <Pressable onPress={() => setShowSchedule((v) => !v)}>
+          <Pressable
+            onPress={() => setShowSchedule((v) => !v)}
+            style={({ pressed }) => pressed && styles.linkPressed}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={`${showSchedule ? 'Hide' : 'Show'} amortization schedule`}
+            accessibilityState={{ expanded: showSchedule }}
+          >
             <Text style={styles.toggleLink}>
               {showSchedule ? 'Hide' : 'Show'} amortization schedule
             </Text>
@@ -171,6 +178,9 @@ const styles = StyleSheet.create({
     fontSize: fontSize.bodySmall,
     color: colors.accent,
     marginTop: spacing.lg,
+  },
+  linkPressed: {
+    opacity: 0.6,
   },
   table: {
     marginTop: spacing.md,

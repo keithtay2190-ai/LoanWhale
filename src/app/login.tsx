@@ -50,7 +50,13 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <Pressable onPress={() => router.back()}>
+      <Pressable
+        onPress={() => router.back()}
+        style={({ pressed }) => pressed && styles.linkPressed}
+        hitSlop={8}
+        accessibilityRole="button"
+        accessibilityLabel="Back"
+      >
         <Text style={styles.backLink}>← Back</Text>
       </Pressable>
 
@@ -63,6 +69,8 @@ export default function LoginScreen() {
         autoCapitalize="none"
         autoCorrect={false}
         keyboardType="email-address"
+        textContentType="emailAddress"
+        autoComplete="email"
         value={email}
         onChangeText={setEmail}
       />
@@ -71,6 +79,8 @@ export default function LoginScreen() {
         placeholder="Password"
         placeholderTextColor={colors.textMuted}
         secureTextEntry
+        textContentType="password"
+        autoComplete="password"
         value={password}
         onChangeText={setPassword}
       />
@@ -90,6 +100,11 @@ export default function LoginScreen() {
           setErrorMessage(null);
           setInfoMessage(null);
         }}
+        style={({ pressed }) => pressed && styles.linkPressed}
+        accessibilityRole="button"
+        accessibilityLabel={
+          mode === 'sign-in' ? "Don't have an account? Sign up" : 'Already have an account? Log in'
+        }
       >
         <Text style={styles.switchModeText}>
           {mode === 'sign-in' ? "Don't have an account? Sign up" : 'Already have an account? Log in'}
@@ -109,6 +124,9 @@ const styles = StyleSheet.create({
     fontSize: fontSize.body,
     color: colors.accent,
     marginTop: spacing.sm,
+  },
+  linkPressed: {
+    opacity: 0.6,
   },
   title: {
     fontSize: fontSize.display,

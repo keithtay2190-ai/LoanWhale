@@ -13,29 +13,43 @@ export function ProfileMenu() {
 
   return (
     <>
-      <Pressable onPress={() => setOpen(true)}>
+      <Pressable
+        onPress={() => setOpen(true)}
+        style={({ pressed }) => pressed && styles.avatarPressed}
+        hitSlop={8}
+        accessibilityRole="button"
+        accessibilityLabel="Open profile menu"
+      >
         <Avatar url={profile?.avatarUrl} />
       </Pressable>
 
       <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
-        <Pressable style={styles.backdrop} onPress={() => setOpen(false)}>
+        <Pressable
+          style={styles.backdrop}
+          onPress={() => setOpen(false)}
+          accessibilityLabel="Close menu"
+        >
           <View style={styles.menu}>
             <Pressable
-              style={styles.menuItem}
+              style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
               onPress={() => {
                 setOpen(false);
                 router.push('/profile');
               }}
+              accessibilityRole="button"
+              accessibilityLabel="Profile details"
             >
               <Text style={styles.menuItemText}>Details</Text>
             </Pressable>
             <View style={styles.menuDivider} />
             <Pressable
-              style={styles.menuItem}
+              style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
               onPress={() => {
                 setOpen(false);
                 supabase.auth.signOut();
               }}
+              accessibilityRole="button"
+              accessibilityLabel="Log out"
             >
               <Text style={styles.menuItemText}>Log Out</Text>
             </Pressable>
@@ -47,6 +61,9 @@ export function ProfileMenu() {
 }
 
 const styles = StyleSheet.create({
+  avatarPressed: {
+    opacity: 0.7,
+  },
   backdrop: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.55)',
@@ -68,6 +85,9 @@ const styles = StyleSheet.create({
   menuItem: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
+  },
+  menuItemPressed: {
+    backgroundColor: colors.surfaceAlt,
   },
   menuItemText: {
     fontSize: fontSize.bodySmall + 1,

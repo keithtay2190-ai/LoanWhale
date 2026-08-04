@@ -38,7 +38,12 @@ export function DocumentUploadSlot({ label }: { label: string }) {
           <Text style={styles.receivedBadgeText}>Received ✓</Text>
         </View>
       ) : (
-        <Pressable style={styles.selectButton} onPress={handleSelect}>
+        <Pressable
+          style={({ pressed }) => [styles.selectButton, pressed && styles.selectButtonPressed]}
+          onPress={handleSelect}
+          accessibilityRole="button"
+          accessibilityLabel={`Select file for ${label}`}
+        >
           <Text style={styles.selectButtonText}>Select File</Text>
         </Pressable>
       )}
@@ -80,6 +85,9 @@ const styles = StyleSheet.create({
     borderRadius: radii.sm,
     paddingHorizontal: spacing.md + 2,
     paddingVertical: spacing.sm,
+  },
+  selectButtonPressed: {
+    opacity: 0.85,
   },
   selectButtonText: {
     color: colors.onDark,

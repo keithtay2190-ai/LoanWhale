@@ -99,8 +99,15 @@ export default function LoanComparisonScreen() {
           onPress={() => setFilter('for-you')}
         />
         <Pressable
-          style={[styles.filterButton, styles.bankButton, bankFilter && styles.filterButtonActive]}
+          style={({ pressed }) => [
+            styles.filterButton,
+            styles.bankButton,
+            bankFilter && styles.filterButtonActive,
+            pressed && styles.filterButtonPressed,
+          ]}
           onPress={() => setBankMenuOpen(true)}
+          accessibilityRole="button"
+          accessibilityLabel={bankFilter ? `Filtering by ${bankFilter}. Change bank filter` : 'Filter by bank'}
         >
           <Text
             style={[styles.filterButtonText, bankFilter && styles.filterButtonTextActive]}
@@ -137,11 +144,14 @@ export default function LoanComparisonScreen() {
             <Text style={styles.bankMenuTitle}>Filter by bank</Text>
             <ScrollView style={styles.bankMenuList}>
               <Pressable
-                style={styles.bankMenuItem}
+                style={({ pressed }) => [styles.bankMenuItem, pressed && styles.bankMenuItemPressed]}
                 onPress={() => {
                   setBankFilter(null);
                   setBankMenuOpen(false);
                 }}
+                accessibilityRole="button"
+                accessibilityLabel="All Banks"
+                accessibilityState={{ selected: !bankFilter }}
               >
                 <Text style={styles.bankMenuItemText}>All Banks</Text>
                 {!bankFilter && <Ionicons name="checkmark" size={18} color={colors.primary} />}
@@ -149,11 +159,14 @@ export default function LoanComparisonScreen() {
               {bankOptions.map((bank) => (
                 <Pressable
                   key={bank}
-                  style={styles.bankMenuItem}
+                  style={({ pressed }) => [styles.bankMenuItem, pressed && styles.bankMenuItemPressed]}
                   onPress={() => {
                     setBankFilter(bank);
                     setBankMenuOpen(false);
                   }}
+                  accessibilityRole="button"
+                  accessibilityLabel={bank}
+                  accessibilityState={{ selected: bankFilter === bank }}
                 >
                   <Text style={styles.bankMenuItemText}>{bank}</Text>
                   {bankFilter === bank && (
@@ -167,8 +180,10 @@ export default function LoanComparisonScreen() {
       </Modal>
 
       <Pressable
-        style={styles.sortButton}
+        style={({ pressed }) => [styles.sortButton, pressed && styles.sortButtonPressed]}
         onPress={() => setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'))}
+        accessibilityRole="button"
+        accessibilityLabel={`Sorted by rate, ${sortDirection === 'asc' ? 'low to high' : 'high to low'}. Tap to reverse`}
       >
         <Text style={styles.sortButtonText}>
           Rate: {sortDirection === 'asc' ? 'Low to High' : 'High to Low'} ↕
@@ -241,7 +256,14 @@ function FilterButton({
   return (
     <Pressable
       onPress={onPress}
-      style={[styles.filterButton, active && styles.filterButtonActive]}
+      style={({ pressed }) => [
+        styles.filterButton,
+        active && styles.filterButtonActive,
+        pressed && styles.filterButtonPressed,
+      ]}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ selected: active }}
     >
       <Text style={[styles.filterButtonText, active && styles.filterButtonTextActive]}>
         {label}
@@ -254,7 +276,12 @@ function LoanCard({ loan }: { loan: Loan }) {
   const hasQuantumRange = loan.loan_amount_min != null || loan.loan_amount_max != null;
 
   return (
-    <Pressable style={styles.card} onPress={() => router.push(`/loan/${loan.id}`)}>
+    <Pressable
+      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+      onPress={() => router.push(`/loan/${loan.id}`)}
+      accessibilityRole="button"
+      accessibilityLabel={`${loan.bank_name} ${loan.loan_type} loan, ${formatPercent(loan.interest_rate)} rate`}
+    >
       <View style={styles.cardHeader}>
         <Text style={styles.bankName}>{loan.bank_name}</Text>
         <View style={styles.typeBadge}>
@@ -306,6 +333,9 @@ const styles = StyleSheet.create({
   filterButtonActive: {
     backgroundColor: colors.primary,
   },
+  filterButtonPressed: {
+    opacity: 0.7,
+  },
   filterButtonText: {
     fontSize: fontSize.bodySmall,
     color: colors.textPrimary,
@@ -347,9 +377,16 @@ const styles = StyleSheet.create({
     fontSize: fontSize.body,
     color: colors.textPrimary,
   },
+  bankMenuItemPressed: {
+    opacity: 0.6,
+  },
   sortButton: {
     marginTop: spacing.sm + 2,
     alignSelf: 'flex-start',
+    paddingVertical: spacing.xs,
+  },
+  sortButtonPressed: {
+    opacity: 0.6,
   },
   sortButtonText: {
     fontSize: fontSize.bodySmall,
@@ -391,6 +428,10 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: radii.lg,
     padding: spacing.lg - 2,
+  },
+  cardPressed: {
+    backgroundColor: colors.surface,
+    borderColor: colors.borderStrong,
   },
   cardHeader: {
     flexDirection: 'row',

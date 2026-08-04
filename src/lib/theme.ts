@@ -13,7 +13,7 @@ export const colors = {
 
   textPrimary: '#FFFFFF',
   textSecondary: '#9B9BAA',
-  textMuted: '#6E6E7C',
+  textMuted: '#84848F', // was #6E6E7C - only ~3.8:1 against background, below WCAG AA 4.5:1
   onDark: '#FFFFFF', // text on the primary/accent-filled buttons
   onLight: '#0E0E14', // text on light-filled surfaces (e.g. white tiles)
 

@@ -151,7 +151,13 @@ export default function ProfileDetailsScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <Pressable onPress={() => router.back()}>
+      <Pressable
+        onPress={() => router.back()}
+        style={({ pressed }) => pressed && styles.linkPressed}
+        hitSlop={8}
+        accessibilityRole="button"
+        accessibilityLabel="Back"
+      >
         <Text style={styles.backLink}>← Back</Text>
       </Pressable>
 
@@ -177,7 +183,14 @@ export default function ProfileDetailsScreen() {
 
           <View style={styles.avatarRow}>
             <Avatar url={profile.avatarUrl} size={80} />
-            <Pressable onPress={handleChangePhoto} disabled={uploadingPhoto}>
+            <Pressable
+              onPress={handleChangePhoto}
+              disabled={uploadingPhoto}
+              style={({ pressed }) => pressed && styles.linkPressed}
+              accessibilityRole="button"
+              accessibilityLabel="Change profile photo"
+              accessibilityState={{ disabled: uploadingPhoto, busy: uploadingPhoto }}
+            >
               <Text style={styles.changePhotoLink}>
                 {uploadingPhoto ? 'Uploading…' : 'Change photo'}
               </Text>
@@ -265,7 +278,17 @@ function OptionPill({
   onPress: () => void;
 }) {
   return (
-    <Pressable onPress={onPress} style={[styles.optionPill, active && styles.optionPillActive]}>
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.optionPill,
+        active && styles.optionPillActive,
+        pressed && styles.optionPillPressed,
+      ]}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ selected: active }}
+    >
       <Text style={[styles.optionPillText, active && styles.optionPillTextActive]}>{label}</Text>
     </Pressable>
   );
@@ -282,6 +305,9 @@ const styles = StyleSheet.create({
     color: colors.accent,
     marginTop: spacing.sm,
     marginBottom: spacing.sm,
+  },
+  linkPressed: {
+    opacity: 0.6,
   },
   centerFill: {
     flex: 1,
@@ -355,6 +381,9 @@ const styles = StyleSheet.create({
   },
   optionPillActive: {
     backgroundColor: colors.primary,
+  },
+  optionPillPressed: {
+    opacity: 0.7,
   },
   optionPillText: {
     fontSize: fontSize.bodySmall,

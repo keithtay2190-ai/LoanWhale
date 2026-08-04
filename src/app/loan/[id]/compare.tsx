@@ -57,7 +57,12 @@ export default function CompareLoanScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <Pressable onPress={() => (otherLoan ? setOtherLoanId(null) : router.back())}>
+      <Pressable
+        onPress={() => (otherLoan ? setOtherLoanId(null) : router.back())}
+        style={({ pressed }) => pressed && styles.linkPressed}
+        accessibilityRole="button"
+        accessibilityLabel={otherLoan ? 'Change comparison loan' : 'Back'}
+      >
         <Text style={styles.backLink}>← {otherLoan ? 'Change' : 'Back'}</Text>
       </Pressable>
 
@@ -85,7 +90,12 @@ export default function CompareLoanScreen() {
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.pickList}
             renderItem={({ item }) => (
-              <Pressable style={styles.pickRow} onPress={() => setOtherLoanId(item.id)}>
+              <Pressable
+                style={({ pressed }) => [styles.pickRow, pressed && styles.pickRowPressed]}
+                onPress={() => setOtherLoanId(item.id)}
+                accessibilityRole="button"
+                accessibilityLabel={`Compare with ${item.bank_name} ${item.loan_type} loan`}
+              >
                 <View>
                   <Text style={styles.pickBankName}>{item.bank_name}</Text>
                   <Text style={styles.pickLoanType}>{item.loan_type}</Text>
@@ -140,6 +150,9 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
     marginBottom: spacing.sm,
   },
+  linkPressed: {
+    opacity: 0.6,
+  },
   centerFill: {
     flex: 1,
     alignItems: 'center',
@@ -179,6 +192,10 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: radii.lg,
     padding: spacing.lg - 2,
+  },
+  pickRowPressed: {
+    backgroundColor: colors.surface,
+    borderColor: colors.borderStrong,
   },
   pickBankName: {
     fontSize: fontSize.body,

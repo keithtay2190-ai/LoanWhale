@@ -55,7 +55,13 @@ export default function OnboardingScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <Pressable style={styles.skipButton} onPress={finishOnboarding}>
+      <Pressable
+        style={({ pressed }) => [styles.skipButton, pressed && styles.skipButtonPressed]}
+        onPress={finishOnboarding}
+        hitSlop={8}
+        accessibilityRole="button"
+        accessibilityLabel="Skip onboarding"
+      >
         <Text style={styles.skipText}>Skip</Text>
       </Pressable>
 
@@ -124,6 +130,9 @@ const styles = StyleSheet.create({
     zIndex: 1,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
+  },
+  skipButtonPressed: {
+    opacity: 0.6,
   },
   skipText: {
     fontSize: fontSize.bodySmall,

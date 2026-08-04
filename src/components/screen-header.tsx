@@ -14,7 +14,13 @@ export function ScreenHeader({ title }: { title: string }) {
       {session ? (
         <ProfileMenu />
       ) : (
-        <Pressable onPress={() => router.push('/login')}>
+        <Pressable
+          onPress={() => router.push('/login')}
+          style={({ pressed }) => pressed && styles.authLinkPressed}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel="Log in"
+        >
           <Text style={styles.authLink}>Log In</Text>
         </Pressable>
       )}
@@ -38,5 +44,8 @@ const styles = StyleSheet.create({
     fontSize: fontSize.bodySmall + 1,
     color: colors.accent,
     fontWeight: '600',
+  },
+  authLinkPressed: {
+    opacity: 0.6,
   },
 });

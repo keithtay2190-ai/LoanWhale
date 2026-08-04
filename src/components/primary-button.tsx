@@ -15,9 +15,16 @@ export function PrimaryButton({
 }) {
   return (
     <Pressable
-      style={[styles.button, (disabled || loading) && styles.buttonDisabled]}
+      style={({ pressed }) => [
+        styles.button,
+        (disabled || loading) && styles.buttonDisabled,
+        pressed && !(disabled || loading) && styles.buttonPressed,
+      ]}
       onPress={onPress}
       disabled={disabled || loading}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ disabled: disabled || loading, busy: loading }}
     >
       {loading ? (
         <ActivityIndicator color={colors.onDark} />
@@ -38,6 +45,10 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     opacity: 0.6,
+  },
+  buttonPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.98 }],
   },
   label: {
     color: colors.onDark,

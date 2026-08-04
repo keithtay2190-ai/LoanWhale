@@ -149,7 +149,12 @@ function ApplicationCard({
   );
 
   return (
-    <Pressable style={styles.card} onPress={() => router.push(`/loan/${application.loan_id}`)}>
+    <Pressable
+      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+      onPress={() => router.push(`/loan/${application.loan_id}`)}
+      accessibilityRole="button"
+      accessibilityLabel={`${application.loans?.bank_name ?? 'Loan'} application, status ${application.status}`}
+    >
       <Text style={styles.bankName}>{application.loans?.bank_name ?? 'Loan'}</Text>
       <Text style={styles.loanType}>{application.loans?.loan_type}</Text>
 
@@ -179,9 +184,12 @@ function ApplicationCard({
       )}
 
       <Pressable
-        style={styles.cancelButton}
+        style={({ pressed }) => [styles.cancelButton, pressed && !cancelling && styles.cancelButtonPressed]}
         onPress={() => onCancel(application.id)}
         disabled={cancelling}
+        accessibilityRole="button"
+        accessibilityLabel="Cancel application"
+        accessibilityState={{ disabled: cancelling, busy: cancelling }}
       >
         <Text style={styles.cancelButtonText}>
           {cancelling ? 'Cancelling…' : 'Cancel Application'}
@@ -234,6 +242,10 @@ const styles = StyleSheet.create({
     borderRadius: radii.lg,
     padding: spacing.lg - 2,
   },
+  cardPressed: {
+    backgroundColor: colors.surface,
+    borderColor: colors.borderStrong,
+  },
   bankName: {
     fontSize: fontSize.body + 1,
     fontWeight: '600',
@@ -284,6 +296,9 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: colors.border,
     alignItems: 'center',
+  },
+  cancelButtonPressed: {
+    opacity: 0.6,
   },
   cancelButtonText: {
     fontSize: fontSize.bodySmall,

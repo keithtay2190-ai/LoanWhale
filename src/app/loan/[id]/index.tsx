@@ -108,10 +108,20 @@ export default function LoanDetailScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.headerRow}>
-        <Pressable onPress={() => router.back()}>
+        <Pressable
+          onPress={() => router.back()}
+          style={({ pressed }) => pressed && styles.linkPressed}
+          accessibilityRole="button"
+          accessibilityLabel="Back"
+        >
           <Text style={styles.backLink}>← Back</Text>
         </Pressable>
-        <Pressable onPress={() => router.push(`/loan/${id}/compare`)}>
+        <Pressable
+          onPress={() => router.push(`/loan/${id}/compare`)}
+          style={({ pressed }) => pressed && styles.linkPressed}
+          accessibilityRole="button"
+          accessibilityLabel="Compare with another loan"
+        >
           <Text style={styles.compareLink}>Compare</Text>
         </Pressable>
       </View>
@@ -155,7 +165,12 @@ export default function LoanDetailScreen() {
                 <Text style={styles.appliedText}>
                   Your application has been submitted, we will contact you shortly.
                 </Text>
-                <Pressable onPress={() => router.push('/status')}>
+                <Pressable
+                  onPress={() => router.push('/status')}
+                  style={({ pressed }) => pressed && styles.linkPressed}
+                  accessibilityRole="button"
+                  accessibilityLabel="View application status"
+                >
                   <Text style={styles.appliedLink}>View status →</Text>
                 </Pressable>
               </View>
@@ -238,6 +253,9 @@ const styles = StyleSheet.create({
     fontSize: fontSize.body,
     color: colors.accent,
     fontWeight: '600',
+  },
+  linkPressed: {
+    opacity: 0.6,
   },
   centerFill: {
     flex: 1,
