@@ -52,6 +52,13 @@ export const radii = {
   pill: 999,
 } as const;
 
+// Plus Jakarta Sans: a free, open-license (SIL OFL) geometric sans with a
+// similarly warm/rounded character to Kind Sans (a commercial font we didn't
+// have a license for), loaded via @expo-google-fonts in src/app/_layout.tsx.
+export const fontFamily = {
+  heading: 'PlusJakartaSans_700Bold',
+} as const;
+
 export const fontSize = {
   micro: 11,
   caption: 12,

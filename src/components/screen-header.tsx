@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ProfileMenu } from '@/components/profile-menu';
 import { useSession } from '@/hooks/use-session';
-import { colors, fontSize, spacing } from '@/lib/theme';
+import { colors, fontFamily, fontSize, spacing } from '@/lib/theme';
 
 export function ScreenHeader({ title }: { title: string }) {
   const { session } = useSession();
@@ -36,8 +36,8 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   title: {
+    fontFamily: fontFamily.heading,
     fontSize: fontSize.h1,
-    fontWeight: '700',
     color: colors.textPrimary,
   },
   authLink: {

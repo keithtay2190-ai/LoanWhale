@@ -10,7 +10,7 @@ import { getFriendlyErrorMessage } from '@/lib/errors';
 import { formatPercent, formatSGD } from '@/lib/format';
 import { computeMonthlyInstalment } from '@/lib/loan-math';
 import { supabase } from '@/lib/supabase';
-import { colors, fontSize, radii, spacing } from '@/lib/theme';
+import { colors, fontFamily, fontSize, radii, spacing } from '@/lib/theme';
 import type { Tables } from '@/lib/database.types';
 
 type Loan = Tables<'loans'>;
@@ -281,8 +281,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   title: {
+    fontFamily: fontFamily.heading,
     fontSize: fontSize.h2 + 2,
-    fontWeight: '700',
     color: colors.textPrimary,
   },
   forYouPill: {

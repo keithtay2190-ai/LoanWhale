@@ -11,7 +11,7 @@ import { useSession } from '@/hooks/use-session';
 import { getFriendlyErrorMessage } from '@/lib/errors';
 import { INCOME_RANGES } from '@/lib/income-ranges';
 import { supabase } from '@/lib/supabase';
-import { colors, fontSize, radii, spacing } from '@/lib/theme';
+import { colors, fontFamily, fontSize, radii, spacing } from '@/lib/theme';
 
 const EMPLOYMENT_TYPES = ['Salaried', 'Self-Employed', 'Business Owner', 'Unemployed'];
 
@@ -346,8 +346,8 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   title: {
+    fontFamily: fontFamily.heading,
     fontSize: fontSize.h1,
-    fontWeight: '700',
     color: colors.textPrimary,
     marginTop: spacing.sm,
   },

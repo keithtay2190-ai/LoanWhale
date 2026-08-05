@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { PrimaryButton } from '@/components/primary-button';
 import { getFriendlyErrorMessage } from '@/lib/errors';
 import { supabase } from '@/lib/supabase';
-import { colors, fontSize, radii, spacing } from '@/lib/theme';
+import { colors, fontFamily, fontSize, radii, spacing } from '@/lib/theme';
 
 type Mode = 'sign-in' | 'sign-up';
 
@@ -129,8 +129,8 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   title: {
+    fontFamily: fontFamily.heading,
     fontSize: fontSize.display,
-    fontWeight: '700',
     color: colors.textPrimary,
     marginTop: spacing.xxl,
     marginBottom: spacing.xxl,

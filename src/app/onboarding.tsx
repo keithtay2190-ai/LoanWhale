@@ -15,7 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { PrimaryButton } from '@/components/primary-button';
 import { markOnboardingSeen } from '@/lib/onboarding-storage';
-import { colors, fontSize, radii, spacing } from '@/lib/theme';
+import { colors, fontFamily, fontSize, radii, spacing } from '@/lib/theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -186,8 +186,8 @@ const styles = StyleSheet.create({
     borderRadius: 22,
   },
   title: {
+    fontFamily: fontFamily.heading,
     fontSize: fontSize.h1,
-    fontWeight: '700',
     color: colors.textPrimary,
     textAlign: 'center',
     marginBottom: spacing.md,

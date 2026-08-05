@@ -2,7 +2,7 @@ import { Component, ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { PrimaryButton } from '@/components/primary-button';
-import { colors, fontSize, spacing } from '@/lib/theme';
+import { colors, fontFamily, fontSize, spacing } from '@/lib/theme';
 
 type Props = { children: ReactNode };
 type State = { hasError: boolean };
@@ -54,8 +54,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xxl,
   },
   title: {
+    fontFamily: fontFamily.heading,
     fontSize: fontSize.h1,
-    fontWeight: '700',
     color: colors.textPrimary,
     textAlign: 'center',
   },
