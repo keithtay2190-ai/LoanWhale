@@ -12,7 +12,8 @@ type Loan = Tables<'loans'>;
  */
 export function isEligibleForLoan(loan: Loan, profile: Profile): boolean {
   if (loan.loan_type === 'business') {
-    return profile.employmentType === 'Business Owner';
+    if (profile.employmentType !== 'Business Owner') return false;
+    return matchesDesiredAmount(loan, profile);
   }
 
   if (loan.min_age != null && (profile.age == null || profile.age < loan.min_age)) {
@@ -28,6 +29,14 @@ export function isEligibleForLoan(loan: Loan, profile: Profile): boolean {
     }
   }
 
+  return matchesDesiredAmount(loan, profile);
+}
+
+/** Optional filter: if the user set a desired loan amount, only match loans whose range covers it. */
+function matchesDesiredAmount(loan: Loan, profile: Profile): boolean {
+  if (profile.desiredAmount == null) return true;
+  if (loan.loan_amount_min != null && profile.desiredAmount < loan.loan_amount_min) return false;
+  if (loan.loan_amount_max != null && profile.desiredAmount > loan.loan_amount_max) return false;
   return true;
 }
 

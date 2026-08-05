@@ -11,6 +11,7 @@ export type Profile = {
   age: number | null;
   incomeRange: string | null;
   employmentType: string | null;
+  desiredAmount: number | null;
 };
 
 type ProfileContextValue = {
@@ -44,7 +45,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     setError(null);
     const { data, error: fetchError } = await supabase
       .from('users')
-      .select('email, name, avatar_url, age, income_range, employment_type')
+      .select('email, name, avatar_url, age, income_range, employment_type, desired_loan_amount')
       .eq('id', session.user.id)
       .single();
 
@@ -61,6 +62,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       age: data.age,
       incomeRange: data.income_range,
       employmentType: data.employment_type,
+      desiredAmount: data.desired_loan_amount,
     });
     setLoading(false);
   }, [session]);

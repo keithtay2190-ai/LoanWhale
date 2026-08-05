@@ -34,6 +34,7 @@ export default function ProfileDetailsScreen() {
   const [ageText, setAgeText] = useState('');
   const [incomeRange, setIncomeRange] = useState<string | null>(null);
   const [employmentType, setEmploymentType] = useState<string | null>(null);
+  const [desiredAmountText, setDesiredAmountText] = useState('');
 
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -53,6 +54,7 @@ export default function ProfileDetailsScreen() {
       setAgeText(profile.age != null ? String(profile.age) : '');
       setIncomeRange(profile.incomeRange);
       setEmploymentType(profile.employmentType);
+      setDesiredAmountText(profile.desiredAmount != null ? String(profile.desiredAmount) : '');
       setFormInitialized(true);
     }
   }, [profile, formInitialized]);
@@ -126,6 +128,12 @@ export default function ProfileDetailsScreen() {
       return;
     }
 
+    const desiredAmount = desiredAmountText ? Number(desiredAmountText) : null;
+    if (desiredAmountText && (!Number.isFinite(desiredAmount) || desiredAmount! <= 0)) {
+      setSaveError('Enter a valid loan amount.');
+      return;
+    }
+
     setSaveError(null);
     setSaveStatus('saving');
 
@@ -136,6 +144,7 @@ export default function ProfileDetailsScreen() {
         age,
         income_range: incomeRange,
         employment_type: employmentType,
+        desired_loan_amount: desiredAmount,
       })
       .eq('id', session.user.id);
 
@@ -145,7 +154,7 @@ export default function ProfileDetailsScreen() {
       return;
     }
 
-    updateLocalProfile({ name: name || null, age, incomeRange, employmentType });
+    updateLocalProfile({ name: name || null, age, incomeRange, employmentType, desiredAmount });
     setSaveStatus('saved');
   }
 
@@ -216,6 +225,16 @@ export default function ProfileDetailsScreen() {
               placeholder="e.g. 30"
               value={ageText}
               onChangeText={setAgeText}
+            />
+          </FormField>
+
+          <FormField label="Loan amount you're looking for">
+            <TextInput
+              style={styles.input}
+              keyboardType="number-pad"
+              placeholder="e.g. 20000"
+              value={desiredAmountText}
+              onChangeText={setDesiredAmountText}
             />
           </FormField>
 

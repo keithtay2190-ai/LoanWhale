@@ -141,6 +141,7 @@ export type Database = {
           age: number | null
           avatar_url: string | null
           created_at: string
+          desired_loan_amount: number | null
           email: string
           employment_type: string | null
           id: string
@@ -151,6 +152,7 @@ export type Database = {
           age?: number | null
           avatar_url?: string | null
           created_at?: string
+          desired_loan_amount?: number | null
           email: string
           employment_type?: string | null
           id: string
@@ -161,6 +163,7 @@ export type Database = {
           age?: number | null
           avatar_url?: string | null
           created_at?: string
+          desired_loan_amount?: number | null
           email?: string
           employment_type?: string | null
           id?: string

@@ -60,4 +60,5 @@ export const fontSize = {
   h2: 18,
   h1: 24,
   display: 30,
+  hero: 40,
 } as const;
