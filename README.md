@@ -6,15 +6,13 @@ A loan comparison app for Singapore-based borrowers — browse real bank rates, 
 
 ## Screenshots
 
-<!--
-  TODO: add screenshots here once captured on-device via Expo Go. Suggested
-  shots: onboarding, comparison list (For You filter active), loan detail
-  with the EIR calculator expanded, Details/profile, and the status tracker.
--->
-
-| Compare | Loan Detail | Status Tracker |
+| Compare ("For You") | Loan Detail + Calculator | Loan Comparison |
 |---|---|---|
-| _coming soon_ | _coming soon_ | _coming soon_ |
+| ![Compare Loans list](assets/screenshots/compare-list.jpg) | ![Loan detail with repayment calculator](assets/screenshots/loan-detail-calculator.jpg) | ![Side-by-side loan comparison](assets/screenshots/loan-comparison.jpg) |
+
+| Application Status | Profile Details |
+|---|---|
+| ![Application status tracker](assets/screenshots/status-tracker.jpg) | ![Profile details form](assets/screenshots/profile-details.jpg) |
 
 ## Features
 
