@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -8,17 +9,17 @@ import { Avatar } from '@/components/avatar';
 import { PrimaryButton } from '@/components/primary-button';
 import { useProfile } from '@/context/profile-context';
 import { useSession } from '@/hooks/use-session';
+import { EMPLOYMENT_TYPES } from '@/lib/employment-types';
 import { getFriendlyErrorMessage } from '@/lib/errors';
 import { INCOME_RANGES } from '@/lib/income-ranges';
+import { saveLocalProfileDraft } from '@/lib/local-profile-storage';
 import { supabase } from '@/lib/supabase';
 import { colors, fontFamily, fontSize, radii, spacing } from '@/lib/theme';
-
-const EMPLOYMENT_TYPES = ['Salaried', 'Self-Employed', 'Business Owner', 'Unemployed'];
 
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
 export default function ProfileDetailsScreen() {
-  const { session, loading: sessionLoading } = useSession();
+  const { session } = useSession();
   const {
     profile,
     loading: profileLoading,
@@ -38,12 +39,6 @@ export default function ProfileDetailsScreen() {
 
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [saveError, setSaveError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!sessionLoading && !session) {
-      router.replace('/login');
-    }
-  }, [session, sessionLoading]);
 
   // Seed the editable form fields once from the shared profile, rather than
   // binding inputs directly to context (which would fight with the user's
@@ -120,8 +115,6 @@ export default function ProfileDetailsScreen() {
   }
 
   async function handleSave() {
-    if (!session) return;
-
     const age = ageText ? Number(ageText) : null;
     if (ageText && (!Number.isInteger(age) || age! < 18 || age! > 100)) {
       setSaveError('Enter a valid age between 18 and 100.');
@@ -136,6 +129,26 @@ export default function ProfileDetailsScreen() {
 
     setSaveError(null);
     setSaveStatus('saving');
+
+    if (!session) {
+      // Guest - no account to write to yet, so this just updates the
+      // on-device draft. "For You" matching still picks it up immediately.
+      try {
+        await saveLocalProfileDraft({
+          name: name || null,
+          age,
+          incomeRange,
+          employmentType,
+          desiredAmount,
+        });
+        await refreshProfile();
+        setSaveStatus('saved');
+      } catch (err) {
+        setSaveError(getFriendlyErrorMessage(err));
+        setSaveStatus('error');
+      }
+      return;
+    }
 
     const { error } = await supabase
       .from('users')
@@ -186,28 +199,49 @@ export default function ProfileDetailsScreen() {
         </View>
       )}
 
-      {!profileLoading && profile && (
+      {!profileLoading && !(profileError && !profile) && (
         <ScrollView contentContainerStyle={styles.content}>
           <Text style={styles.title}>Profile Details</Text>
 
-          <View style={styles.avatarRow}>
-            <Avatar url={profile.avatarUrl} size={80} />
-            <Pressable
-              onPress={handleChangePhoto}
-              disabled={uploadingPhoto}
-              style={({ pressed }) => pressed && styles.linkPressed}
-              accessibilityRole="button"
-              accessibilityLabel="Change profile photo"
-              accessibilityState={{ disabled: uploadingPhoto, busy: uploadingPhoto }}
-            >
-              <Text style={styles.changePhotoLink}>
-                {uploadingPhoto ? 'Uploading…' : 'Change photo'}
+          {!session && (
+            <View style={styles.guestBanner}>
+              <Text style={styles.guestBannerText}>
+                You're not logged in — what you enter here is saved on this device and used for
+                "For You" matching. You'll need an account to apply for a loan.
               </Text>
-            </Pressable>
-          </View>
-          {photoError && <Text style={styles.errorText}>{photoError}</Text>}
+              <Pressable
+                onPress={() => router.push('/login')}
+                style={({ pressed }) => pressed && styles.linkPressed}
+                accessibilityRole="button"
+                accessibilityLabel="Create an account or log in"
+              >
+                <Text style={styles.guestBannerLink}>Create an account / Log in</Text>
+              </Pressable>
+            </View>
+          )}
 
-          <Text style={styles.subtitle}>{profile.email}</Text>
+          {session && (
+            <>
+              <View style={styles.avatarRow}>
+                <Avatar url={profile?.avatarUrl ?? null} size={80} />
+                <Pressable
+                  onPress={handleChangePhoto}
+                  disabled={uploadingPhoto}
+                  style={({ pressed }) => pressed && styles.linkPressed}
+                  accessibilityRole="button"
+                  accessibilityLabel="Change profile photo"
+                  accessibilityState={{ disabled: uploadingPhoto, busy: uploadingPhoto }}
+                >
+                  <Text style={styles.changePhotoLink}>
+                    {uploadingPhoto ? 'Uploading…' : 'Change photo'}
+                  </Text>
+                </Pressable>
+              </View>
+              {photoError && <Text style={styles.errorText}>{photoError}</Text>}
+
+              <Text style={styles.subtitle}>{profile?.email}</Text>
+            </>
+          )}
 
           <FormField label="Name">
             <TextInput
@@ -272,6 +306,20 @@ export default function ProfileDetailsScreen() {
             onPress={handleSave}
             loading={saveStatus === 'saving'}
           />
+
+          {/* TEMPORARY dev affordance for re-testing onboarding - remove before shipping. */}
+          <Pressable
+            onPress={async () => {
+              await AsyncStorage.removeItem('hasSeenOnboarding');
+              await supabase.auth.signOut();
+              router.replace('/onboarding');
+            }}
+            style={({ pressed }) => [styles.devResetLink, pressed && styles.linkPressed]}
+            accessibilityRole="button"
+            accessibilityLabel="Reset onboarding and log out (dev only)"
+          >
+            <Text style={styles.devResetText}>Reset onboarding + log out (dev)</Text>
+          </Pressable>
         </ScrollView>
       )}
     </SafeAreaView>
@@ -351,6 +399,26 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     marginTop: spacing.sm,
   },
+  guestBanner: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radii.lg,
+    padding: spacing.lg,
+    marginTop: spacing.lg,
+    marginBottom: spacing.xl,
+  },
+  guestBannerText: {
+    fontSize: fontSize.bodySmall,
+    color: colors.textSecondary,
+    lineHeight: 20,
+  },
+  guestBannerLink: {
+    fontSize: fontSize.bodySmall,
+    color: colors.accent,
+    fontWeight: '600',
+    marginTop: spacing.sm,
+  },
   avatarRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -422,5 +490,13 @@ const styles = StyleSheet.create({
     color: colors.success,
     fontSize: fontSize.bodySmall,
     marginBottom: spacing.md,
+  },
+  devResetLink: {
+    marginTop: spacing.xl,
+    alignItems: 'center',
+  },
+  devResetText: {
+    fontSize: fontSize.caption,
+    color: colors.textMuted,
   },
 });

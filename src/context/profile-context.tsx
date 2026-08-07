@@ -2,10 +2,11 @@ import { createContext, ReactNode, useCallback, useContext, useEffect, useState 
 
 import { useSession } from '@/hooks/use-session';
 import { getFriendlyErrorMessage } from '@/lib/errors';
+import { getLocalProfileDraft } from '@/lib/local-profile-storage';
 import { supabase } from '@/lib/supabase';
 
 export type Profile = {
-  email: string;
+  email: string | null; // null for a guest profile sourced from the on-device draft
   name: string | null;
   avatarUrl: string | null;
   age: number | null;
@@ -35,8 +36,25 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
   const refresh = useCallback(async () => {
     if (!session) {
-      setProfile(null);
+      // No account - fall back to whatever was collected on-device during
+      // onboarding (if the user skipped account creation), so "For You"
+      // matching still works for guests without requiring a login.
+      setLoading(true);
       setError(null);
+      const draft = await getLocalProfileDraft();
+      setProfile(
+        draft
+          ? {
+              email: null,
+              name: draft.name,
+              avatarUrl: null,
+              age: draft.age,
+              incomeRange: draft.incomeRange,
+              employmentType: draft.employmentType,
+              desiredAmount: draft.desiredAmount,
+            }
+          : null
+      );
       setLoading(false);
       return;
     }

@@ -15,13 +15,13 @@ export function ScreenHeader({ title }: { title: string }) {
         <ProfileMenu />
       ) : (
         <Pressable
-          onPress={() => router.push('/login')}
+          onPress={() => router.push('/profile')}
           style={({ pressed }) => pressed && styles.authLinkPressed}
           hitSlop={8}
           accessibilityRole="button"
-          accessibilityLabel="Log in"
+          accessibilityLabel="Profile"
         >
-          <Text style={styles.authLink}>Log In</Text>
+          <Text style={styles.authLink}>Profile</Text>
         </Pressable>
       )}
     </View>
