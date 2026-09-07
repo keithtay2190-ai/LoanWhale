@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { FlatList, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,6 +10,7 @@ import { useProfile } from '@/context/profile-context';
 import { hasSufficientProfileData, isEligibleForLoan } from '@/lib/eligibility';
 import { getFriendlyErrorMessage } from '@/lib/errors';
 import { formatPercent, formatSGD } from '@/lib/format';
+import { getHasSeenOnboarding } from '@/lib/onboarding-storage';
 import { supabase } from '@/lib/supabase';
 import { colors, fontSize, radii, spacing } from '@/lib/theme';
 import type { Tables } from '@/lib/database.types';
@@ -29,6 +30,16 @@ export default function LoanComparisonScreen() {
   const [bankMenuOpen, setBankMenuOpen] = useState(false);
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const [retryToken, setRetryToken] = useState(0);
+
+  // "/" always resolves here regardless of onboarding status (see
+  // src/app/_layout.tsx for why this can't be handled via initialRouteName),
+  // so this screen is responsible for redirecting a first-time user away to
+  // onboarding before rendering anything else.
+  const [needsOnboarding, setNeedsOnboarding] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    getHasSeenOnboarding().then((seen) => setNeedsOnboarding(!seen));
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -81,6 +92,13 @@ export default function LoanComparisonScreen() {
         : b.interest_rate - a.interest_rate
     );
   }, [loans, filter, bankFilter, sortDirection, profile]);
+
+  if (needsOnboarding === null) {
+    return <View style={{ flex: 1, backgroundColor: colors.background }} />;
+  }
+  if (needsOnboarding) {
+    return <Redirect href="/onboarding" />;
+  }
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>

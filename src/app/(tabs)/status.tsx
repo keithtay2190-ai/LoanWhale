@@ -1,5 +1,6 @@
+import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -27,33 +28,39 @@ export default function StatusTrackerScreen() {
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [retryToken, setRetryToken] = useState(0);
 
-  useEffect(() => {
-    if (sessionLoading || !session) return;
-    let cancelled = false;
+  // Refetch every time this tab gains focus (not just on first mount) - the
+  // tabs navigator keeps this screen mounted persistently, so a plain
+  // useEffect would only ever fetch once and go stale after applying for a
+  // loan elsewhere and switching back via the tab bar.
+  useFocusEffect(
+    useCallback(() => {
+      if (sessionLoading || !session) return;
+      let cancelled = false;
 
-    async function loadApplications() {
-      setStatus('loading');
-      const { data, error } = await supabase
-        .from('applications')
-        .select('*, loans(bank_name, loan_type)')
-        .eq('user_id', session!.user.id)
-        .order('submitted_at', { ascending: false });
-      if (cancelled) return;
+      async function loadApplications() {
+        setStatus('loading');
+        const { data, error } = await supabase
+          .from('applications')
+          .select('*, loans(bank_name, loan_type)')
+          .eq('user_id', session!.user.id)
+          .order('submitted_at', { ascending: false });
+        if (cancelled) return;
 
-      if (error) {
-        setErrorMessage(getFriendlyErrorMessage(error));
-        setStatus('error');
-        return;
+        if (error) {
+          setErrorMessage(getFriendlyErrorMessage(error));
+          setStatus('error');
+          return;
+        }
+        setApplications((data as ApplicationWithLoan[]) ?? []);
+        setStatus('loaded');
       }
-      setApplications((data as ApplicationWithLoan[]) ?? []);
-      setStatus('loaded');
-    }
 
-    loadApplications();
-    return () => {
-      cancelled = true;
-    };
-  }, [session, sessionLoading, retryToken]);
+      loadApplications();
+      return () => {
+        cancelled = true;
+      };
+    }, [session, sessionLoading, retryToken])
+  );
 
   function confirmCancel(applicationId: string) {
     Alert.alert(

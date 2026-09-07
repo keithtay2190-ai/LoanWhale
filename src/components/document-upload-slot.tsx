@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -34,8 +35,28 @@ export function DocumentUploadSlot({ label }: { label: string }) {
       </View>
 
       {fileName ? (
-        <View style={styles.receivedBadge}>
-          <Text style={styles.receivedBadgeText}>Received ✓</Text>
+        <View style={styles.receivedRow}>
+          <View style={styles.receivedBadge}>
+            <Text style={styles.receivedBadgeText}>Received ✓</Text>
+          </View>
+          <Pressable
+            onPress={handleSelect}
+            style={({ pressed }) => [styles.iconButton, pressed && styles.iconButtonPressed]}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={`Change file for ${label}`}
+          >
+            <Text style={styles.iconButtonText}>Change</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => setFileName(null)}
+            style={({ pressed }) => [styles.removeButton, pressed && styles.iconButtonPressed]}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={`Remove file for ${label}`}
+          >
+            <Ionicons name="close" size={16} color={colors.textMuted} />
+          </Pressable>
         </View>
       ) : (
         <Pressable
@@ -106,5 +127,24 @@ const styles = StyleSheet.create({
     color: colors.success,
     fontSize: fontSize.bodySmall,
     fontWeight: '600',
+  },
+  receivedRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  iconButton: {
+    paddingVertical: spacing.xs,
+  },
+  iconButtonPressed: {
+    opacity: 0.6,
+  },
+  iconButtonText: {
+    color: colors.accent,
+    fontSize: fontSize.bodySmall,
+    fontWeight: '600',
+  },
+  removeButton: {
+    padding: spacing.xs,
   },
 });
