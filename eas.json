@@ -1,0 +1,29 @@
+{
+  "cli": {
+    "version": ">= 22.4.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://pgxbwwdvfndyndnzyhsx.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBneGJ3d2R2Zm5keW5kbnp5aHN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzOTM1OTgsImV4cCI6MjEwMDk2OTU5OH0.UrOOZdPD8HlAiy3qakX-LfJyy8HXxjkPxwkMHyTGkzM"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "ascAppId": "6805144947"
+      }
+    }
+  }
+}

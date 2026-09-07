@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -306,20 +305,6 @@ export default function ProfileDetailsScreen() {
             onPress={handleSave}
             loading={saveStatus === 'saving'}
           />
-
-          {/* TEMPORARY dev affordance for re-testing onboarding - remove before shipping. */}
-          <Pressable
-            onPress={async () => {
-              await AsyncStorage.removeItem('hasSeenOnboarding');
-              await supabase.auth.signOut();
-              router.replace('/onboarding');
-            }}
-            style={({ pressed }) => [styles.devResetLink, pressed && styles.linkPressed]}
-            accessibilityRole="button"
-            accessibilityLabel="Reset onboarding and log out (dev only)"
-          >
-            <Text style={styles.devResetText}>Reset onboarding + log out (dev)</Text>
-          </Pressable>
         </ScrollView>
       )}
     </SafeAreaView>
@@ -490,13 +475,5 @@ const styles = StyleSheet.create({
     color: colors.success,
     fontSize: fontSize.bodySmall,
     marginBottom: spacing.md,
-  },
-  devResetLink: {
-    marginTop: spacing.xl,
-    alignItems: 'center',
-  },
-  devResetText: {
-    fontSize: fontSize.caption,
-    color: colors.textMuted,
   },
 });
