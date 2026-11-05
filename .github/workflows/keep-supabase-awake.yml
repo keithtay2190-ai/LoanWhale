@@ -19,8 +19,9 @@ jobs:
           fi
           echo "Key length: ${#SUPABASE_ANON_KEY} characters"
           code=$(curl -s -o /tmp/body.txt -w "%{http_code}" \
-            "https://pgxbwwdvfndyndnzyhsx.supabase.co/rest/v1/" \
-            -H "apikey: $SUPABASE_ANON_KEY")
+            "https://pgxbwwdvfndyndnzyhsx.supabase.co/rest/v1/loans?select=id&limit=1" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY")
           echo "HTTP $code"
           cat /tmp/body.txt
           if [ "$code" -ge 400 ]; then
